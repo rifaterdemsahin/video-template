@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Master Spec · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">📋 1 Plan → Master Spec</p>
+    <h1>📘 Master Spec: {{VIDEO_TITLE}}</h1>
+    <p class="lead">Editorial brief, rules, acceptance criteria, and risks loaded from <code>spec/project.json</code>.</p>
+
+    <h2>🎯 Editorial Brief</h2>
+    <div id="briefCard" class="card"><p>Loading <code>spec/project.json</code>...</p></div>
+
+    <h2>📏 Rules &amp; Guardrails</h2>
+    <div id="rulesCard" class="card"><p>Loading...</p></div>
+
+    <h2>✅ Acceptance Criteria</h2>
+    <div id="acceptCard" class="card"><p>Loading...</p></div>
+
+    <h2>⚠️ Risks &amp; Open Decisions</h2>
+    <div id="risksCard" class="card"><p>Loading...</p></div>
+
+    <div class="next">
+      <a href="index.html">← Home</a>
+      <a href="script.html">Next: Script &amp; Scenes →</a>
+    </div>
+  </main>
+  <script>
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    fetch("spec/project.json").then(r => r.json()).then(p => {
+      document.getElementById("briefCard").innerHTML = `
+        <table><tbody>
+          <tr><th>Title</th><td>${esc(p.title)}</td></tr>
+          <tr><th>Series</th><td>${esc(p.series)}</td></tr>
+          <tr><th>Owner</th><td>${esc(p.owner)}</td></tr>
+          <tr><th>Audience</th><td>${esc(p.audience)}</td></tr>
+          <tr><th>Goal</th><td>${esc(p.goal)}</td></tr>
+          <tr><th>Single CTA</th><td>${esc(p.singleCallToAction)}</td></tr>
+          <tr><th>Tone</th><td>${esc(p.tone)}</td></tr>
+          <tr><th>Target Length</th><td>${esc(p.targetLengthSeconds)}s (${esc(p.language)})</td></tr>
+          <tr><th>Disclaimer</th><td>${esc(p.disclaimer || "None")}</td></tr>
+        </tbody></table>`;
+      document.getElementById("rulesCard").innerHTML = `<ul>${(p.rules || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>`;
+      document.getElementById("acceptCard").innerHTML = `<ul>${(p.acceptance || []).map(a => `<li>${esc(a)}</li>`).join("")}</ul>`;
+      const risks = (p.risks || []).map(r => `<li><b>${esc(r.risk)}</b> → ${esc(r.mitigation)}</li>`).join("");
+      const decs = (p.decisions || []).map(d => `<li><b>${esc(d.item)}</b> (${esc(d.status)}, owner: ${esc(d.owner)})</li>`).join("");
+      document.getElementById("risksCard").innerHTML = `<h3>Risks</h3><ul>${risks}</ul><h3 style="margin-top:12px">Open Decisions</h3><ul>${decs}</ul>`;
+    }).catch(() => {
+      document.getElementById("briefCard").innerHTML = `<p class="note">Open via HTTP/GitHub Pages to load <code>spec/project.json</code> dynamically.</p>`;
+    });
+  </script>
+</body>
+</html>

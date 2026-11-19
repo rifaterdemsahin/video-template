@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Release Checklist · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">🚀 3 Publish → Release Checklist</p>
+    <h1>✅ Release Checklist: {{VIDEO_TITLE}}</h1>
+    <p class="lead">Pre-production, production, and release verification gates (synced with <code>checklists/*.md</code>).</p>
+
+    <h2>📋 1. Pre-Production</h2>
+    <div class="card">
+      <ul>
+        <li><code>video.yaml</code> filled in and <code>./new-video.sh {{SLUG}}</code> (or <code>init-panel.mjs</code>) run</li>
+        <li>Brief written in <code>spec/project.json</code> (audience, goal, single CTA, tone)</li>
+        <li>Scenes written in <code>script/scenes.json</code> (VO, overlays, timings)</li>
+        <li>Shot list &amp; <code>realAsset</code> footage checked for privacy</li>
+      </ul>
+    </div>
+
+    <h2>🎬 2. Production &amp; Build</h2>
+    <div class="card">
+      <ul>
+        <li>Background plates generated (<code>scripts/gen-backgrounds.sh</code>) or added to <code>video/assets/bg/</code></li>
+        <li>Voiceover generated (<code>scripts/gen-voiceover.sh</code>) or added to <code>video/assets/vo/</code></li>
+        <li><code>node scripts/build-video.mjs</code> &amp; <code>cd video &amp;&amp; npm run check</code> pass</li>
+        <li>Draft rendered (<code>scripts/render.sh draft</code>) and watched end to end</li>
+      </ul>
+    </div>
+
+    <h2>🚀 3. Final Release</h2>
+    <div class="card">
+      <ul>
+        <li>Final MP4 rendered with <code>scripts/render.sh final</code> (1920×1080, 30fps)</li>
+        <li>No personal data, logins, or API keys visible in any exported frame</li>
+        <li>Thumbnails built with <code>scripts/build-thumbnails.sh</code> (1280×720, &lt; 2 MB)</li>
+        <li>YouTube title, description, chapters, and tags ready from <code>spec/publish.json</code></li>
+      </ul>
+    </div>
+
+    <div class="next">
+      <a href="publish.html">← Publish &amp; Thumbnails</a>
+      <a href="agents.html">Next: AGENTS.md →</a>
+    </div>
+  </main>
+</body>
+</html>

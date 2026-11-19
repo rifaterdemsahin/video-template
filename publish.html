@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Publish &amp; Thumbnails · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    .tframe{width:100%;aspect-ratio:16/9;border:1px solid var(--line);border-radius:10px;background:#000}
+  </style>
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">🚀 3 Publish → Title, Description &amp; Thumbnails</p>
+    <h1>📣 Publish Packaging: {{VIDEO_TITLE}}</h1>
+    <p class="lead">YouTube titles, description template, auto-generated chapters, and A/B/C HTML thumbnails from <code>spec/publish.json</code>.</p>
+
+    <h2>🏷️ Title Options &amp; Chapters</h2>
+    <div id="pubMeta" class="card"><p>Loading <code>spec/publish.json</code>...</p></div>
+
+    <h2>🖼️ Thumbnail Variants (1280×720 HTML)</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Variant A: Classic Bold</h3>
+        <p><a href="thumbnails/thumb-a.html" target="_blank">Open full size ↗</a></p>
+      </div>
+      <div class="card">
+        <h3>Variant B: Split-Screen</h3>
+        <p><a href="thumbnails/thumb-b.html" target="_blank">Open full size ↗</a></p>
+      </div>
+      <div class="card">
+        <h3>Variant C: Before / After</h3>
+        <p><a href="thumbnails/thumb-c.html" target="_blank">Open full size ↗</a></p>
+      </div>
+    </div>
+    <p class="note">Render all variants to 1280×720 JPGs with <code>scripts/build-thumbnails.sh</code>.</p>
+
+    <div class="next">
+      <a href="kanban.html">← Kanban Board</a>
+      <a href="release-checklist.html">Next: Release Checklist →</a>
+    </div>
+  </main>
+  <script>
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    fetch("spec/publish.json").then(r => r.json()).then(p => {
+      const titles = (p.titles || []).map(t => `<li><b>${esc(t.text)}</b> ${t.recommended ? '<span class="badge ok">Recommended</span>' : ""} <br><small>${esc(t.why)}</small></li>`).join("");
+      const chapters = Array.isArray(p.chapters) && p.chapters.length ? `<pre>${esc(p.chapters.join("\n"))}</pre>` : `<p><small>Run <code>node scripts/retime.mjs</code> to auto-generate chapters.</small></p>`;
+      document.getElementById("pubMeta").innerHTML = `<h3>Title Options</h3><ul>${titles}</ul><h3 style="margin-top:14px">Chapters</h3>${chapters}<h3 style="margin-top:14px">Description Template</h3><pre>${esc(p.descriptionTemplate)}</pre>`;
+    }).catch(() => {
+      document.getElementById("pubMeta").innerHTML = `<p class="note">Open via HTTP/GitHub Pages to load <code>spec/publish.json</code> dynamically.</p>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Script &amp; Scenes · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">📋 1 Plan → Script &amp; Scenes</p>
+    <h1>📜 Script &amp; Scenes: {{VIDEO_TITLE}}</h1>
+    <p class="lead">Live view of <code>script/scenes.json</code> (target ~130 WPM, ≤ 6 words per headline).</p>
+
+    <h2>🎬 Scene Breakdown</h2>
+    <div id="scenesWrap"><p class="card">Loading <code>script/scenes.json</code>...</p></div>
+
+    <div class="next">
+      <a href="master-spec.html">← Master Spec</a>
+      <a href="plan/storyboard.html">Next: Storyboard →</a>
+    </div>
+  </main>
+  <script>
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const fmt = (sec) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+    fetch("script/scenes.json").then(r => r.json()).then(data => {
+      const scenes = data.scenes || [];
+      document.getElementById("scenesWrap").innerHTML = scenes.map((s, i) => {
+        const words = String(s.vo || "").trim().split(/\s+/).filter(Boolean).length;
+        const wpm = Math.round((words / Math.max(1, s.voSeconds || (s.duration - 1.5))) * 60);
+        return `
+          <div class="card">
+            <p><span class="badge">#${i + 1} · ${esc(s.id)}</span> <span class="badge ok">${fmt(s.start)} – ${fmt(s.start + s.duration)} (${s.duration}s)</span> <span class="badge warn">${words} words · ~${wpm} WPM</span></p>
+            <h3 style="margin-top:8px">${esc(s.label)} — ${esc(s.title)}</h3>
+            <p><b>Voiceover:</b> ${esc(s.vo)}</p>
+            <p><b>Overlays:</b> ${(s.overlay || []).map(x => `<code>${esc(x)}</code>`).join(" · ")}</p>
+            <p><b>Background:</b> <code>${esc(s.bg)}</code> · <b>B-roll:</b> ${esc(s.broll)}</p>
+            ${s.realAsset ? `<p><b>Real Asset Needed:</b> ${esc(s.realAsset)}</p>` : ""}
+          </div>`;
+      }).join("");
+    }).catch(() => {
+      document.getElementById("scenesWrap").innerHTML = `<p class="note">Open via HTTP/GitHub Pages to load <code>script/scenes.json</code> dynamically.</p>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Review Hub · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">🔍 2 Review → Review Hub</p>
+    <h1>📝 Review Hub: {{VIDEO_TITLE}}</h1>
+    <p class="lead">Inspect visual pacing, scene timings, and quality gates before rendering the final MP4.</p>
+
+    <h2>🎞️ Review Surfaces</h2>
+    <div class="grid">
+      <a class="tile" href="plan/storyboard.html">
+        <b>🎞️ Visual Storyboard</b>
+        <span>Every scene card side-by-side with background plate, overlays, and voiceover audio.</span>
+      </a>
+      <a class="tile" href="script.html">
+        <b>📜 Script &amp; WPM Audit</b>
+        <span>Review spoken lines, overlay word counts, and real-asset requirements.</span>
+      </a>
+      <a class="tile" href="publish.html">
+        <b>🖼️ Thumbnail A/B/C Previews</b>
+        <span>Check all three HTML thumbnail variants at 1280×720.</span>
+      </a>
+      <a class="tile" href="release-checklist.html">
+        <b>✅ Release Checklist</b>
+        <span>Verify render quality, privacy/legal checks, and packaging readiness.</span>
+      </a>
+    </div>
+
+    <h2>🧪 Pre-Render Quality Gates</h2>
+    <div class="card">
+      <pre>node scripts/validate.mjs --strict   # Blocks on &lt;&lt;...&gt;&gt; placeholders or missing media
+cd video &amp;&amp; npm run check            # Hyperframes layout, motion, contrast &amp; craft check
+npx hyperframes snapshot --at 1,16   # Inspect rendered PNG frames before full MP4</pre>
+    </div>
+
+    <div class="next">
+      <a href="plan/storyboard.html">← Storyboard</a>
+      <a href="kanban.html">Next: Kanban Board →</a>
+    </div>
+  </main>
+</body>
+</html>

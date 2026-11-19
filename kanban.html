@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kanban Board · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    .kgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:12px}
+    .kcol{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+    .kcol h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:10px}
+    .kitem{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin-bottom:8px;font-size:13.5px}
+    .kitem small{display:block;margin-top:2px}
+  </style>
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">🔍 2 Review → Kanban Board</p>
+    <h1>📋 Production Kanban: {{VIDEO_TITLE}}</h1>
+    <p class="lead">Track what is done, what is in progress, and what is waiting on assets or review.</p>
+
+    <h2>🗂️ Pipeline Board</h2>
+    <div class="kgrid">
+      <div class="kcol">
+        <h3>1. Plan</h3>
+        <div class="kitem">Fill <code>video.yaml</code> &amp; run <code>./new-video.sh</code><small>Identity &amp; slug</small></div>
+        <div class="kitem">Complete <code>spec/project.json</code><small>Audience, goal, CTA</small></div>
+        <div class="kitem">Write <code>plan/outline.md</code><small>Narrative beats</small></div>
+      </div>
+      <div class="kcol">
+        <h3>2. Script &amp; Assets</h3>
+        <div class="kitem">Author <code>script/scenes.json</code><small>VO + overlays (~130 WPM)</small></div>
+        <div class="kitem">Generate plates<small><code>scripts/gen-backgrounds.sh</code></small></div>
+        <div class="kitem">Generate voiceover<small><code>scripts/gen-voiceover.sh</code></small></div>
+      </div>
+      <div class="kcol">
+        <h3>3. Build &amp; Review</h3>
+        <div class="kitem">Build Hyperframes<small><code>node scripts/build-video.mjs</code></small></div>
+        <div class="kitem">Inspect Storyboard<small><code>node scripts/build-storyboard.mjs</code></small></div>
+        <div class="kitem">Render Draft MP4<small><code>scripts/render.sh draft</code></small></div>
+      </div>
+      <div class="kcol">
+        <h3>4. Publish</h3>
+        <div class="kitem">Build Thumbnails A/B/C<small><code>scripts/build-thumbnails.sh</code></small></div>
+        <div class="kitem">Render Final MP4<small><code>scripts/render.sh final</code></small></div>
+        <div class="kitem">Tick <code>checklists/release.md</code><small>Privacy &amp; audio sync</small></div>
+      </div>
+    </div>
+
+    <div class="next">
+      <a href="review.html">← Review Hub</a>
+      <a href="publish.html">Next: Publish &amp; Thumbnails →</a>
+    </div>
+  </main>
+</body>
+</html>

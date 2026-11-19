@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AGENTS.md · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">⚙️ 4 Project → AGENTS.md</p>
+    <h1>🤖 AI Agent Operating Guide</h1>
+    <p class="lead">Summary of <code>AGENTS.md</code> for Claude Code, Antigravity, Cursor, and Codex.</p>
+
+    <h2>🧭 Single Source of Truth</h2>
+    <div class="card">
+      <ul>
+        <li><code>video.yaml</code> — Root identity (title, series, publish_date, slug).</li>
+        <li><code>spec/project.json</code> — Editorial brief, audience, goal, rules, risks.</li>
+        <li><code>script/scenes.json</code> — Definitive structural source for scenes, VO, overlays, and timings.</li>
+        <li><code>video/</code> — Generated Hyperframes HTML. <b>Never edit <code>video/index.html</code> or <code>video/compositions/*.html</code> by hand.</b></li>
+      </ul>
+    </div>
+
+    <h2>🛡️ Strict Rules</h2>
+    <div class="card">
+      <ul>
+        <li>No secrets or binary media in Git (<code>.env</code> and <code>video/assets/</code> are git-ignored).</li>
+        <li>No hallucinated URLs, prices, or metrics — mark unknowns as <code>&lt;&lt;TO CONFIRM&gt;&gt;</code>.</li>
+        <li>Deterministic GSAP animations only (no <code>Math.random()</code>, no <code>Date.now()</code>).</li>
+        <li>Every timed element has <code>class="clip"</code>, <code>data-start</code>, and <code>data-duration</code>.</li>
+      </ul>
+    </div>
+
+    <div class="next">
+      <a href="release-checklist.html">← Release Checklist</a>
+      <a href="index.html">Home →</a>
+    </div>
+  </main>
+</body>
+</html>

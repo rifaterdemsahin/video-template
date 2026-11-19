@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recommendations · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">📋 1 Plan → Recommendations</p>
+    <h1>💡 Recommendations &amp; Maturity</h1>
+    <p class="lead">Pipeline improvements implemented and open items from <code>docs/RECOMMENDATIONS.md</code> and <code>docs/MATURITY.md</code>.</p>
+
+    <h2>✅ Implemented in Template</h2>
+    <div class="card">
+      <ul>
+        <li><b>Auto-retime &amp; Chapters</b>: <code>scripts/retime.mjs</code> sets scene starts/durations from <code>voSeconds</code> and exports YouTube chapters to <code>spec/publish.json</code>.</li>
+        <li><b>Zero-<code>jq</code> Portability</b>: Shell scripts use Node.js for JSON parsing and auto-detect Chrome/Chromium across Linux and macOS.</li>
+        <li><b>Local GSAP &amp; Style Presets</b>: <code>presets/style.json</code> controls theme colors/fonts, and local GSAP enables offline deterministic renders.</li>
+        <li><b>Pacing &amp; Readability Linter</b>: <code>scripts/validate.mjs</code> checks WPM speech rate and overlay density.</li>
+        <li><b>Bulk Setup Panel &amp; Storyboard</b>: <code>panel/index.html</code> + <code>scripts/init-panel.mjs</code> and <code>scripts/build-storyboard.mjs</code>.</li>
+        <li><b>CI/CD Pre-Flight Gate</b>: <code>.github/workflows/check.yml</code> &amp; auto-built storyboard on GitHub Pages.</li>
+      </ul>
+    </div>
+
+    <h2>💡 Next Open Ideas</h2>
+    <div class="card">
+      <ul>
+        <li>Render a full real video end-to-end from a fresh template copy to verify MP4 output with a real <code>FAL_KEY</code>.</li>
+        <li>Upload key-frame PNG snapshots in CI PRs for visual diffing.</li>
+      </ul>
+    </div>
+
+    <div class="next">
+      <a href="plan/storyboard.html">← Storyboard</a>
+      <a href="agents.html">Next: AGENTS.md →</a>
+    </div>
+  </main>
+</body>
+</html>

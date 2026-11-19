@@ -91,11 +91,14 @@ const html = `<!doctype html>
   </style>
 </head>
 <body>
+  <script src="../nav.js"></script>
+  <main style="max-width:1200px;margin:0 auto;padding:32px 20px">
   <header>
     <h1>Storyboard: ${esc(S.title || proj.title || "Untitled Video")}</h1>
     <div class="summary">${scenes.length} scenes · Total ${fmt(total)} (${total}s) · Audience: ${esc(proj.audience || "—")}</div>
   </header>
   ${cards}
+  </main>
 </body>
 </html>
 `;
