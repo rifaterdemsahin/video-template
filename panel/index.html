@@ -331,6 +331,7 @@
           <label for="draftScript">Rough Draft Script or Talking Points</label>
           <span class="hint">Paste your raw script, bullet points, or narrative beats here. The generated prompt will instruct the AI agent to estimate scenes, timings (~130 WPM), overlays, and B-roll in <code>script/scenes.json</code> from this draft.</span>
           <textarea id="draftScript" style="min-height:150px" placeholder="Hook: ...&#10;Main Point 1: ...&#10;Main Point 2: ...&#10;CTA: Join the community..."></textarea>
+          <div id="draftStats" class="hint" style="margin-top:4px;font-weight:600;color:var(--accent)">0 words · ~00:45 default runtime · Est. fal.ai cost: ~$0.03</div>
         </div>
       </section>
 
@@ -587,7 +588,16 @@ Execute the following steps in order to create the repository and load the initi
     };
 
     const refreshPromptPreview = () => {
-      document.getElementById("promptPreview").value = buildInitialPrompt(collectPayload());
+      const payload = collectPayload();
+      document.getElementById("promptPreview").value = buildInitialPrompt(payload);
+      const words = payload.draftScript ? payload.draftScript.split(/\s+/).filter(Boolean).length : 0;
+      const secs = payload.totalSecondsApprox;
+      const fmt = `${String(Math.floor(secs / 60)).padStart(2, "0")}:${String(secs % 60).padStart(2, "0")}`;
+      const estCost = (0.01 + (words / 1000) * 0.02).toFixed(2);
+      const statsEl = document.getElementById("draftStats");
+      if (statsEl) {
+        statsEl.textContent = `📝 ${words} words · ⏱️ ~${fmt} est. runtime (130 WPM) · 💵 Est. fal.ai cost: ~$${estCost} (budget cap: $${payload.brief.budgetMaxUsd.toFixed(2)})`;
+      }
     };
 
     restorePanelDraft();
