@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/template.test.mjs",
-    "eval": "node tests/evals.mjs"
+    "eval": "node tests/evals.mjs",
+    "verify:e2e": "bash scripts/verify-e2e.sh"
   }
 }

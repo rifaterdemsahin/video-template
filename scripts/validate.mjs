@@ -19,7 +19,7 @@ if (S) {
   if (!Array.isArray(S.scenes) || !S.scenes.length) err("script/scenes.json: no scenes");
   const seen = new Set();
   let t = 0;
-  for (const s of S.scenes || []) {
+  for (const [idx, s] of (S.scenes || []).entries()) {
     const id = s.id || "(no id)";
     if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) err(`${id}: id must be lowercase letters, digits and dashes`);
     if (seen.has(id)) err(`${id}: duplicate id`);
@@ -54,6 +54,9 @@ if (S) {
     if (!plates.includes(bg) && !existsSync(`${root}/video/assets/bg/${bg}.jpg`)) err(`${id}: bg "${bg}" is not in prompts/backgrounds.json and has no image in video/assets/bg/`);
     if (!existsSync(`${root}/video/assets/bg/${bg}.jpg`)) warn(`${id}: missing video/assets/bg/${bg}.jpg (scripts/gen-backgrounds.sh)`);
     if (!existsSync(`${root}/video/assets/vo/${id}.mp3`)) warn(`${id}: missing video/assets/vo/${id}.mp3 (scripts/gen-voiceover.sh, or add your own)`);
+    if (idx === 0 && (s.duration || 0) > 15 && !text.includes("<<")) warn(`${id}: hook scene is ${s.duration}s (recommended <= 15s for retention)`);
+    const hasFootage = ["mp4", "webm", "mov", "jpg", "png", "webp"].some((e) => existsSync(`${root}/video/assets/footage/${id}.${e}`));
+    if (s.ph && !hasFootage) warn(`${id}: placeholder "${s.ph}" still active (add real footage at video/assets/footage/${id}.mp4 or set ph to null)`);
   }
 }
 for (const f of ["spec/project.json", "spec/publish.json"]) {

@@ -42,7 +42,7 @@ node -e '
   ' "$resp")
   [ -n "$url" ] && [ "$url" != "null" ] || { echo "FAILED $id" >&2; exit 1; }
   curl -sS "$url" -o "/tmp/$id.wav"
-  ffmpeg -y -loglevel error -i "/tmp/$id.wav" -ac 1 -b:a 128k "$OUT/$id.mp3"
+  ffmpeg -y -loglevel error -i "/tmp/$id.wav" -af "loudnorm=I=-14:TP=-1.5:LRA=11" -ac 1 -b:a 128k "$OUT/$id.mp3"
   rm -f "/tmp/$id.wav"
   echo "ok $id"
 done

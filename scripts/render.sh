@@ -35,6 +35,11 @@ else
   node scripts/validate.mjs
   node scripts/build-video.mjs
 fi
+SNAP_AT=$(node -e '
+  const S = JSON.parse(require("fs").readFileSync("script/scenes.json", "utf8"));
+  console.log((S.scenes || []).map(s => Math.max(1, Math.round((s.start || 0) + (s.duration || 2) / 2))).join(","));
+')
 ( cd video && npx --yes "hyperframes@$HF" check )
+( cd video && npx --yes "hyperframes@$HF" snapshot --at "$SNAP_AT" || true )
 ( cd video && npx --yes "hyperframes@$HF" render --quality "$QUALITY" --output "../$OUT" )
 echo "rendered $OUT"

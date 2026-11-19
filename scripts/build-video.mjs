@@ -47,6 +47,9 @@ const CSS = `
     .narrow h1 { font-size: 72px; }
     .line { font-size: 42px; line-height: 1.25; font-weight: 600; padding: 14px 26px; background: rgba(0,0,0,.55); border-left: 6px solid var(--accent); border-radius: 10px; opacity: 0; }
     .ph { position: absolute; right: 100px; top: 230px; width: 780px; height: 440px; border: 4px dashed var(--warn); border-radius: 18px; background: rgba(0,0,0,.55); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 30px; opacity: 0; }
+    .footage { position: absolute; right: 100px; top: 230px; width: 780px; height: 440px; border-radius: 18px; overflow: hidden; border: 2px solid rgba(255,255,255,.18); background: #000; box-shadow: 0 18px 48px rgba(0,0,0,.6); opacity: 0; }
+    .footage.large { right: 60px; top: 200px; width: 1000px; height: 590px; }
+    .footage video, .footage img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .phi { font-size: 70px; color: var(--warn); }
     .pht { font-size: 34px; font-weight: 800; color: var(--warn); letter-spacing: .06em; }
     .phd { font-size: 28px; color: #e8ecf1; line-height: 1.3; }
@@ -86,7 +89,9 @@ let rootAudio = "";
 
 scenes.forEach((s, i) => {
   const [head, ...lines] = s.overlay;
-  const hasPh = !!s.ph;
+  const footageFile = ["mp4", "webm", "mov", "jpg", "png", "webp"].map((e) => `assets/footage/${s.id}.${e}`).find((f) => existsSync(`${root}/video/${f}`));
+  const hasFootage = !!footageFile;
+  const hasPh = !!s.ph && !hasFootage;
   const fx = s.fx && s.fx.type === "leverage" ? s.fx : null;
   const dense = lines.length >= 5;
   const wide = s.phSize === "large";
@@ -151,6 +156,8 @@ ${i === scenes.length - 1 ? "" : `tl.to("#scene", { opacity: 0, duration: 0.4, e
   }
   if (s.logo) js += `
     tl.fromTo("#logo", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 1.2);`;
+  if (hasFootage) js += `
+    tl.fromTo("#footage", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 0.9);`;
   if (hasPh) js += `
     tl.fromTo("#ph", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 0.9);`;
   caps.forEach((c, k) => {
@@ -178,12 +185,13 @@ ${i === scenes.length - 1 ? "" : `tl.to("#scene", { opacity: 0, duration: 0.4, e
       <div class="shade" data-layout-ignore></div>
       <div id="prog" class="prog"></div>
       <div id="tag" class="tag">${esc(s.label)}</div>
-      <div class="stack${hasPh || fx ? " narrow" : ""}${dense ? " dense" : ""}${wide ? " wideph" : ""}">
+      <div class="stack${hasPh || hasFootage || fx ? " narrow" : ""}${dense ? " dense" : ""}${wide ? " wideph" : ""}">
         <h1 id="head">${esc(head)}</h1>
         ${lines.map((l, j) => `<p id="l${j}" class="line">${esc(l)}</p>`).join("\n        ")}
       </div>
       ${fx ? `<div id="fx" class="fx"><div id="lever" class="lever"></div><div class="fulcrum"></div><div id="effort" class="effort">YOU</div><div id="load" class="load">RESULTS</div><div class="fxcap">A small push, a bigger result</div></div>` : ""}
       ${s.logo ? (logoFile ? `<div id="logo" class="logo"><img src="../${logoFile}" alt="${esc(s.logo)} logo"></div>` : `<div id="logo" class="logo missing">${esc(s.logo)} LOGO<br>NEEDED</div>`) : ""}
+      ${hasFootage ? `<div id="footage" class="footage${wide ? " large" : ""}">${/\.(mp4|webm|mov)$/i.test(footageFile) ? `<video muted playsinline src="../${footageFile}"></video>` : `<img src="../${footageFile}" alt="${esc(s.title)}">`}</div>` : ""}
       ${hasPh ? `<div id="ph" class="ph${wide ? " large" : ""}"><div class="phi">▶</div><div class="pht">YOUR FOOTAGE GOES HERE</div><div class="phd">${esc(s.ph)}</div></div>` : ""}
       ${caps.map((c, k) => `<div id="c${k}" class="cap">${esc(c.text)}</div>`).join("\n      ")}
     </div>

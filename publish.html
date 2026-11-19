@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="site.css" />
   <style>
     .tframe{width:100%;aspect-ratio:16/9;border:1px solid var(--line);border-radius:10px;background:#000}
+    .mob-wrap{width:168px;height:94px;overflow:hidden;border-radius:6px;border:1px solid var(--line);background:#000;margin:10px 0}
+    .mob-wrap iframe{width:1280px;height:720px;border:0;transform:scale(0.13125);transform-origin:top left;pointer-events:none}
   </style>
 </head>
 <body>
@@ -19,18 +21,21 @@
     <h2>🏷️ Title Options &amp; Chapters</h2>
     <div id="pubMeta" class="card"><p>Loading <code>spec/publish.json</code>...</p></div>
 
-    <h2>🖼️ Thumbnail Variants (1280×720 HTML)</h2>
+    <h2>🖼️ Thumbnail Variants (1280×720 HTML + 168×94 Mobile Preview)</h2>
     <div class="grid">
       <div class="card">
         <h3>Variant A: Classic Bold</h3>
+        <div class="mob-wrap" title="168x94 mobile size preview"><iframe src="thumbnails/thumb-a.html" loading="lazy"></iframe></div>
         <p><a href="thumbnails/thumb-a.html" target="_blank">Open full size ↗</a></p>
       </div>
       <div class="card">
         <h3>Variant B: Split-Screen</h3>
+        <div class="mob-wrap" title="168x94 mobile size preview"><iframe src="thumbnails/thumb-b.html" loading="lazy"></iframe></div>
         <p><a href="thumbnails/thumb-b.html" target="_blank">Open full size ↗</a></p>
       </div>
       <div class="card">
         <h3>Variant C: Before / After</h3>
+        <div class="mob-wrap" title="168x94 mobile size preview"><iframe src="thumbnails/thumb-c.html" loading="lazy"></iframe></div>
         <p><a href="thumbnails/thumb-c.html" target="_blank">Open full size ↗</a></p>
       </div>
     </div>
