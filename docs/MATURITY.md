@@ -27,7 +27,7 @@ A way to rate how repeatable and safe a video pipeline is, and where this templa
 | 🚀 Reuse and onboarding | 4 | GitHub template, README steps, `new-video.sh`, tested on a clean copy, re-run guard. One video per repo. | Several videos per repo, cross-platform scripts. |
 | 🔒 Hygiene and safety | 4 | `.gitignore` blocks media and `.env`, `.env.example`, key guard. No secrets in the diff. Privacy rules in the checklists. | A pre-commit hook that runs the secret grep. |
 
-**Overall: 3.3 / 5 (average of the ten areas) → Level 3, close to 4.**
+**Overall: 3.2 / 5 (average of the ten areas) → Level 3, close to 4.**
 
 Strongest: build, quality checks, reuse, hygiene. Weakest: the review loop. Biggest unknown: the render, because the scripts were tested but a full MP4 was not produced from the template.
 
