@@ -61,6 +61,7 @@ const server = createServer((req, res) => {
           language: d.brief.language,
           disclaimer: d.brief.disclaimer || "",
         });
+        proj.format = { ...(proj.format || {}), videoFormat: d.video.videoFormat || "long" };
         writeFileSync(`${root}/spec/project.json`, JSON.stringify(proj, null, 2) + "\n");
 
         // 3. presets/style.json
@@ -94,6 +95,13 @@ const server = createServer((req, res) => {
         writeFileSync(`${root}/video/meta.json`, JSON.stringify({ id: slug, name: slug, createdAt: new Date().toISOString() }, null, 2) + "\n");
         if (!existsSync(`${root}/.env`) && existsSync(`${root}/.env.example`)) {
           copyFileSync(`${root}/.env.example`, `${root}/.env`);
+        }
+        if (d.keys?.falKey || d.keys?.deepinfraKey) {
+          const envLines = [
+            `FAL_KEY=${d.keys.falKey || ""}`,
+            `DEEPINFRA_API_KEY=${d.keys.deepinfraKey || ""}`,
+          ];
+          writeFileSync(`${root}/.env`, envLines.join("\n") + "\n");
         }
         logs.push(execFileSync("node", [`${root}/scripts/retime.mjs`], { encoding: "utf8" }).trim());
         logs.push(execFileSync("node", [`${root}/scripts/build-video.mjs`], { encoding: "utf8" }).trim());

@@ -11,6 +11,7 @@
   "language": "en-GB",
   "disclaimer": "<<Any required disclaimer, or empty text>>",
   "format": {
+    "videoFormat": "<<short | long | course | podcast>>",
     "resolution": "1920x1080",
     "fps": 30,
     "container": "MP4 (H.264)",

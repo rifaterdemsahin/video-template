@@ -181,6 +181,15 @@
             <label for="publish_date">Publish Date *</label>
             <input id="publish_date" type="date" required />
           </div>
+          <div class="field">
+            <label for="videoFormat">Video Format *</label>
+            <select id="videoFormat" required>
+              <option value="long">Long (16:9 YouTube)</option>
+              <option value="short">Short (9:16 Vertical / Reel)</option>
+              <option value="course">Course (Tutorial Module)</option>
+              <option value="podcast">Podcast (Interview / Discussion)</option>
+            </select>
+          </div>
         </div>
       </section>
 
@@ -260,9 +269,25 @@
         </div>
       </section>
 
-      <!-- 4. Draft Script / Outline -->
+      <!-- 4. API Keys (.env) -->
       <section>
-        <h2>4. Draft Script / Outline (<code>plan/outline.md</code>)</h2>
+        <h2>4. API Keys (<code>.env</code> — Git-Ignored, Never Committed)</h2>
+        <p class="hint" style="margin-bottom:12px">Needed for generating AI backgrounds/voiceovers (fal.ai) and LLM/media inference (DeepInfra). Stored only in local <code>.env</code>.</p>
+        <div class="grid">
+          <div class="field">
+            <label for="falKey">fal.ai Key (<code>FAL_KEY</code>)</label>
+            <input id="falKey" type="password" placeholder="Optional: paste fal.ai key or leave blank to fill .env later" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="deepinfraKey">DeepInfra Key (<code>DEEPINFRA_API_KEY</code>)</label>
+            <input id="deepinfraKey" type="password" placeholder="Optional: paste DeepInfra key or leave blank to fill .env later" autocomplete="off" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Draft Script / Outline -->
+      <section>
+        <h2>5. Draft Script / Outline (<code>plan/outline.md</code>)</h2>
         <div class="field">
           <label for="draftScript">Rough Draft Script or Talking Points</label>
           <span class="hint">Paste your raw script, bullet points, or narrative beats here. The generated prompt will instruct the AI agent to estimate scenes, timings (~130 WPM), overlays, and B-roll in <code>script/scenes.json</code> from this draft.</span>
@@ -270,10 +295,10 @@
         </div>
       </section>
 
-      <!-- 5. Live Generated Prompt -->
+      <!-- 6. Live Generated Prompt -->
       <section>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-          <h2 style="margin:0">5. Generated Initial Repo Prompt (Download Ready)</h2>
+          <h2 style="margin:0">6. Generated Initial Repo Prompt (Download Ready)</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" id="copyPromptInlineBtn" class="btn btn-secondary">📋 Copy Prompt</button>
             <button type="button" id="dlPromptInlineBtn" class="btn btn-primary">⬇️ Download Prompt (.md)</button>
@@ -338,7 +363,12 @@
           title: titleEl.value.trim(),
           slug: slugEl.value.trim(),
           series: document.getElementById("series").value.trim() || "Standalone",
-          publish_date: document.getElementById("publish_date").value
+          publish_date: document.getElementById("publish_date").value,
+          videoFormat: document.getElementById("videoFormat").value
+        },
+        keys: {
+          falKey: document.getElementById("falKey").value.trim(),
+          deepinfraKey: document.getElementById("deepinfraKey").value.trim()
         },
         brief: {
           owner: document.getElementById("owner").value.trim() || "Rifat Erdem Sahin",
@@ -373,7 +403,7 @@ You are a Senior Video Production Engineer & Hyperframes Automation Agent. Your 
 
 ## Context
 - **Repository Template**: \`rifaterdemsahin/video-template\`
-- **Target Video**: \`${title}\` (slug: \`${slug}\`, series: \`${p.video.series}\`, publish date: \`${p.video.publish_date}\`)
+- **Target Video**: \`${title}\` (slug: \`${slug}\`, format: \`${p.video.videoFormat}\`, series: \`${p.video.series}\`, publish date: \`${p.video.publish_date}\`)
 - **Owner**: ${p.brief.owner}
 - **Target Audience**: ${p.brief.audience}
 - **Goal**: ${p.brief.goal || "<<TO CONFIRM>>"}
@@ -403,7 +433,10 @@ ${JSON.stringify({
   tone: p.brief.tone,
   targetLengthSeconds: p.totalSecondsApprox,
   language: p.brief.language,
-  disclaimer: p.brief.disclaimer
+  disclaimer: p.brief.disclaimer,
+  format: {
+    videoFormat: p.video.videoFormat
+  }
 }, null, 2)}
 \`\`\`
 
@@ -432,7 +465,12 @@ Execute the following steps in order to create the repository and load the initi
    gh repo create ${slug} --template rifaterdemsahin/video-template --public --clone
    cd ${slug}
    \`\`\`
-2. **Initialize Scaffolding**: Write \`video.yaml\` with the payload above and run \`./new-video.sh ${slug}\`.
+2. **Initialize Scaffolding & \`.env\`**: Write \`video.yaml\` with the payload above, run \`./new-video.sh ${slug}\`, and configure \`.env\` (git-ignored) with your API keys:
+   \`\`\`env
+   FAL_KEY=${p.keys.falKey ? "<PROVIDED_FAL_KEY>" : "<YOUR_FAL_AI_KEY>"}
+   DEEPINFRA_API_KEY=${p.keys.deepinfraKey ? "<PROVIDED_DEEPINFRA_KEY>" : "<YOUR_DEEPINFRA_API_KEY>"}
+   \`\`\`
+   ${p.keys.falKey || p.keys.deepinfraKey ? "_Note: Keys were entered in the local panel; paste them into `.env` locally (never commit `.env` to Git)._" : "_Note: Obtain keys from fal.ai and DeepInfra and place them in `.env` (never commit `.env` to Git)._"}
 3. **Load Initial Data**: Populate \`spec/project.json\`, \`presets/style.json\`, \`prompts/backgrounds.json\`, and \`plan/outline.md\` with the payloads above.
 4. **Estimate & Generate \`script/scenes.json\` from the Draft Script**:
    - Break the initial draft script in \`plan/outline.md\` into structured scenes (\`s01-hook\`, \`s02-...\`, final \`sXX-cta\`).
