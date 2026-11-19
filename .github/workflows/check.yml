@@ -26,6 +26,11 @@ jobs:
           for f in scripts/*.mjs; do node --check "$f"; done
           bash -n new-video.sh scripts/*.sh
 
+      - name: Run template tests & quality evals
+        run: |
+          npm test
+          npm run eval
+
       - name: Hygiene check (no secrets or tracked media)
         run: |
           if git ls-files | grep -qiE '\.(mp4|mov|m4v|mkv|mp3|wav|aac|m4a|jpg|jpeg|png|webp)$|^\.env$'; then

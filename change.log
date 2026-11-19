@@ -16,6 +16,9 @@
 - **Style Presets & BGM Ducking** (`presets/style.json`, `presets/render.json`, `scripts/build-video.mjs`):
   - Extracted palette, fonts, and Art Director defaults into `presets/style.json`.
   - Added optional `bgm` track support with GSAP volume ducking during voiceover clips.
+- **Automated Tests & Quality Evals** (`tests/template.test.mjs`, `tests/evals.mjs`, `package.json`):
+  - Zero-dependency `node:test` integration suite testing JSON schemas, web pages, syntax, and end-to-end temp-copy scaffolding (`npm test`).
+  - Objective quality eval scorecard checking budget cap, 8-layer Art Director defaults, RCCT prompt structure, timeline continuity, determinism, and version sync (`npm run eval`).
 - **CI/CD Pre-Flight Gate** (`.github/workflows/check.yml`):
   - Automated script syntax checks, secret/media hygiene scan, end-to-end temp scaffolding test, and Hyperframes `npm run check`.
 
