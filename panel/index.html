@@ -435,16 +435,21 @@
       const title = p.video.title || "Untitled Video";
       return `# Bootstrap New Video Repository: ${title}
 
-Create a new GitHub repository from \`rifaterdemsahin/video-template\` and initialize it with the full specification below.
+## Role
+You are a Senior Video Production Engineer & Hyperframes Automation Agent. Your job is to initialize a new code-driven video repository from \`rifaterdemsahin/video-template\` and load all initial production data cleanly.
 
-## 1. Create & Clone Repository
-\`\`\`bash
-gh repo create ${slug} --template rifaterdemsahin/video-template --public --clone
-cd ${slug}
-\`\`\`
+## Context
+- **Repository Template**: \`rifaterdemsahin/video-template\`
+- **Target Video**: \`${title}\` (slug: \`${slug}\`, series: \`${p.video.series}\`, publish date: \`${p.video.publish_date}\`)
+- **Owner**: ${p.brief.owner}
+- **Target Audience**: ${p.brief.audience}
+- **Goal**: ${p.brief.goal || "<<TO CONFIRM>>"}
+- **Single Call to Action**: ${p.brief.singleCallToAction}
+- **Tone & Language**: ${p.brief.tone} (${p.brief.language})
 
-## 2. Fill \`video.yaml\` and Run Scaffolding
-Write \`video.yaml\`:
+### Initial Data Payloads to Load
+
+#### 1. \`video.yaml\`
 \`\`\`yaml
 title: ${JSON.stringify(title)}
 series: ${JSON.stringify(p.video.series)}
@@ -452,13 +457,7 @@ publish_date: ${JSON.stringify(p.video.publish_date)}
 slug: "{{SLUG}}"
 \`\`\`
 
-Run once:
-\`\`\`bash
-./new-video.sh ${slug}
-\`\`\`
-
-## 3. Update \`spec/project.json\`
-Set these fields in \`spec/project.json\`:
+#### 2. \`spec/project.json\`
 \`\`\`json
 ${JSON.stringify({
   title,
@@ -475,37 +474,54 @@ ${JSON.stringify({
 }, null, 2)}
 \`\`\`
 
-## 4. Update \`presets/style.json\` & \`prompts/backgrounds.json\`
-Update \`presets/style.json\` colors:
+#### 3. \`presets/style.json\` & \`prompts/backgrounds.json\`
 \`\`\`json
 ${JSON.stringify({ colors: { accent: p.style.accent, warn: p.style.warn } }, null, 2)}
 \`\`\`
-
-Update \`prompts/backgrounds.json\` plates:
 \`\`\`json
 ${JSON.stringify({ plates: p.plates }, null, 2)}
 \`\`\`
 
-## 5. Save Draft Script to \`plan/outline.md\`
+#### 4. \`plan/outline.md\` (Draft Script / Narrative Beats)
 ${p.draftScript ? `\`\`\`markdown\n${p.draftScript}\n\`\`\`` : "_No draft script provided yet — generate outline from the brief above._"}
 
-## 6. Write \`script/scenes.json\`
+#### 5. \`script/scenes.json\`
 \`\`\`json
 ${JSON.stringify({ title, slug, totalSecondsApprox: p.totalSecondsApprox, scenes: p.scenes }, null, 2)}
 \`\`\`
 
-## 7. Build, Validate, Generate Assets & Deploy
-\`\`\`bash
-node scripts/retime.mjs
-node scripts/build-video.mjs
-node scripts/build-storyboard.mjs
-node scripts/validate.mjs
-# Optional (requires FAL_KEY in .env):
-# scripts/gen-backgrounds.sh && scripts/gen-voiceover.sh
-# Render draft:
-# scripts/render.sh draft
-git add -A && git commit -m "feat: initialize ${slug}" && git push origin main
-\`\`\`
+## Constraints
+- Follow all rules in \`AGENTS.md\`.
+- **Single Source of Truth**: Only edit \`video.yaml\`, \`spec/*.json\`, \`script/scenes.json\`, \`prompts/backgrounds.json\`, \`presets/style.json\`, and \`plan/outline.md\`. Never edit \`video/index.html\` or \`video/compositions/*.html\` directly.
+- **No Secrets or Media in Git**: Keep \`FAL_KEY\` in \`.env\` only; never commit \`.mp4\`, \`.mp3\`, \`.jpg\`, or \`.png\` files.
+- **Readability & Pacing**: Keep spoken \`vo\` at ~130 WPM, overlay headlines ≤ 6 words, and all text within 16:9 safe areas.
+- **No Hallucinated Facts**: Use \`<<TO CONFIRM>>\` for any missing metrics, quotes, or links.
+
+## Task
+Execute the following steps in order to create the repository and load the initial data:
+1. **Create & Clone Repo**:
+   \`\`\`bash
+   gh repo create ${slug} --template rifaterdemsahin/video-template --public --clone
+   cd ${slug}
+   \`\`\`
+2. **Initialize Scaffolding**: Write \`video.yaml\` with the payload above and run \`./new-video.sh ${slug}\`.
+3. **Load Initial Data**: Populate \`spec/project.json\`, \`presets/style.json\`, \`prompts/backgrounds.json\`, \`plan/outline.md\`, and \`script/scenes.json\` with the payloads above (expanding the draft script into polished scenes if any \`vo\` fields are empty).
+4. **Build, Storyboard & Validate**:
+   \`\`\`bash
+   node scripts/retime.mjs
+   node scripts/build-video.mjs
+   node scripts/build-storyboard.mjs
+   node scripts/validate.mjs
+   \`\`\`
+5. **Optional Assets & Draft Render** (if \`.env\` has \`FAL_KEY\`):
+   \`\`\`bash
+   scripts/gen-backgrounds.sh && scripts/gen-voiceover.sh
+   scripts/render.sh draft
+   \`\`\`
+6. **Commit & Push**:
+   \`\`\`bash
+   git add -A && git commit -m "feat: initialize ${slug}" && git push origin main
+   \`\`\`
 `;
     };
 
