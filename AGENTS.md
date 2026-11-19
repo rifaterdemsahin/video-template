@@ -51,7 +51,7 @@ The rules in `spec/project.json` win. Defaults: no AI-generated text, numbers, d
 
 ## Hyperframes project notes
 
-- `video/` pins `hyperframes@0.9.67` in `video/package.json` and `presets/render.json`. Read the release notes before upgrading, and change both.
+- `video/package.json` is the one place that pins the Hyperframes version (`hyperframes@x.y.z` in each script); `scripts/render.sh` reads it from there. Read the release notes before upgrading, and change every script line in that file.
 - Follow `video/CLAUDE.md` for the render contract: timed elements need `data-start` and `class="clip"`, the root timeline is paused and registered on `window.__timelines`, and only deterministic logic.
 - Always run `npm run check`, then look at snapshots, before reporting a scene done.
 - Render locally.

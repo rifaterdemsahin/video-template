@@ -4,7 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 MODE="${1:-draft}"
-HF=$(jq -r '.hyperframes' presets/render.json)
+HF=$(jq -r '.scripts.check | capture("hyperframes@(?<v>[0-9.]+)").v' video/package.json)
+[ -n "$HF" ] || { echo "cannot read the hyperframes version from video/package.json" >&2; exit 1; }
 QUALITY=$(jq -r --arg m "$MODE" '.[$m].quality' presets/render.json)
 OUT="video/renders/$(jq -r '.slug // "video"' spec/project.json)-$MODE.mp4"
 [ "$QUALITY" != "null" ] || { echo "unknown mode: $MODE (see presets/render.json)" >&2; exit 1; }

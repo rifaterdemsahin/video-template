@@ -1,9 +1,14 @@
 {
-  "_about": "Render settings read by scripts/render.sh. Hyperframes renders from HTML, so these are Hyperframes flags, not DaVinci Resolve presets. Keep 'hyperframes' equal to the version pinned in video/package.json.",
-  "hyperframes": "0.9.67",
+  "_about": "Render settings read by scripts/render.sh. Hyperframes renders from HTML, so these are Hyperframes flags, not DaVinci Resolve presets. The Hyperframes version is pinned once, in video/package.json.",
   "resolution": "1920x1080",
   "fps": 30,
   "container": "MP4 (H.264)",
-  "draft": { "quality": "draft", "use": "review cuts, fast" },
-  "final": { "quality": "looks", "use": "the file you upload; check the exported file, not the preview" }
+  "draft": {
+    "quality": "draft",
+    "use": "review cuts, fast"
+  },
+  "final": {
+    "quality": "looks",
+    "use": "the file you upload; check the exported file, not the preview"
+  }
 }
