@@ -1,5 +1,7 @@
 # video-template
 
+> Check the template : https://rifaterdemsahin.github.io/video-template/
+
 A template for producing a video with [Hyperframes](https://hyperframes.heygen.com): script, spec, checklists, prompts, thumbnail and metadata templates, and a pipeline that builds scenes from `script/scenes.json` and renders the MP4. One repo per video.
 
 ## Start a new video
