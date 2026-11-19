@@ -11,6 +11,19 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const S = JSON.parse(readFileSync(`${root}/script/scenes.json`, "utf8"));
+const readJsonSafe = (p, fallback) => { try { return JSON.parse(readFileSync(`${root}/${p}`, "utf8")); } catch { return fallback; } };
+const style = readJsonSafe("presets/style.json", {});
+const renderCfg = readJsonSafe("presets/render.json", {});
+const colors = {
+  ink: "#ffffff",
+  accent: "#4cc3d9",
+  warn: "#ffd166",
+  tagText: "#04222a",
+  loadText: "#3a2a00",
+  ...(style.colors || {}),
+};
+const font = style.font || 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+
 const FINAL = process.argv.includes("--final");
 const DRAFT_N = (() => { try { return JSON.parse(readFileSync(`${root}/draft/versions.json`, "utf8")).latest; } catch { return 1; } })();
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -21,13 +34,13 @@ const total = scenes[scenes.length - 1].start + scenes[scenes.length - 1].durati
 const VO_LEAD = 0.25; // the voice starts a quarter second into the scene
 
 const CSS = `
-    :root { --ink: #ffffff; --accent: #4cc3d9; --warn: #ffd166; --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    :root { --ink: ${colors.ink}; --accent: ${colors.accent}; --warn: ${colors.warn}; --font: ${font}; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     .scene { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; font-family: var(--font); color: var(--ink); opacity: 0; }
     .bg { position: absolute; inset: -60px; background-size: cover; background-position: center; transform-origin: 50% 50%; }
     .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.45) 55%, rgba(0,0,0,.25) 100%), linear-gradient(0deg, rgba(0,0,0,.7) 0%, rgba(0,0,0,0) 38%); }
     .prog { position: absolute; left: 0; top: 0; width: 1920px; height: 8px; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
-    .tag { position: absolute; top: 56px; left: 80px; padding: 8px 20px; border-radius: 8px; background: var(--accent); color: #04222a; font-weight: 800; font-size: 28px; letter-spacing: .08em; opacity: 0; }
+    .tag { position: absolute; top: 56px; left: 80px; padding: 8px 20px; border-radius: 8px; background: var(--accent); color: ${colors.tagText}; font-weight: 800; font-size: 28px; letter-spacing: .08em; opacity: 0; }
     .stack { position: absolute; left: 120px; top: 210px; width: 1200px; display: flex; flex-direction: column; gap: 18px; }
     .stack.narrow { width: 820px; }
     h1 { font-size: 84px; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; text-shadow: 0 4px 24px rgba(0,0,0,.6); opacity: 0; }
@@ -51,11 +64,17 @@ const CSS = `
     .fx { position: absolute; right: 70px; top: 240px; width: 860px; height: 520px; opacity: 0; }
     .lever { position: absolute; left: 40px; top: 330px; width: 780px; height: 20px; background: #e8ecf1; border-radius: 10px; transform-origin: 480px 10px; }
     .fulcrum { position: absolute; left: 470px; top: 342px; width: 0; height: 0; border-left: 50px solid transparent; border-right: 50px solid transparent; border-bottom: 100px solid var(--accent); }
-    .effort { position: absolute; left: 45px; top: 250px; width: 110px; height: 80px; background: var(--accent); color: #04222a; font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
-    .load { position: absolute; left: 655px; top: 180px; width: 190px; height: 150px; background: var(--warn); color: #3a2a00; font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+    .effort { position: absolute; left: 45px; top: 250px; width: 110px; height: 80px; background: var(--accent); color: ${colors.tagText}; font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+    .load { position: absolute; left: 655px; top: 180px; width: 190px; height: 150px; background: var(--warn); color: ${colors.loadText}; font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
     .fxcap { position: absolute; left: 0; top: 460px; width: 860px; text-align: center; font-size: 32px; font-weight: 700; color: #fff; }`;
 
-const GSAP = `<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>`;
+const hasLocalGsap = existsSync(`${root}/video/node_modules/gsap/dist/gsap.min.js`);
+const GSAP_SCENE = hasLocalGsap
+  ? `<script src="../node_modules/gsap/dist/gsap.min.js"></script>`
+  : `<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>`;
+const GSAP_ROOT = hasLocalGsap
+  ? `<script src="node_modules/gsap/dist/gsap.min.js"></script>`
+  : `<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>`;
 
 mkdirSync(`${root}/video/compositions`, { recursive: true });
 // remove files for scenes that no longer exist
@@ -148,7 +167,7 @@ ${i === scenes.length - 1 ? "" : `tl.to("#scene", { opacity: 0, duration: 0.4, e
 <head>
   <meta charset="UTF-8" />
   <!-- GENERATED by scripts/build-video.mjs from script/scenes.json. Edit the script, not this file. -->
-  ${GSAP}
+  ${GSAP_SCENE}
   <style>${CSS}
   </style>
 </head>
@@ -182,18 +201,39 @@ ${i === scenes.length - 1 ? "" : `tl.to("#scene", { opacity: 0, duration: 0.4, e
     <audio id="vo-${esc(s.id)}" src="assets/vo/${esc(s.id)}.mp3" data-start="${r2(s.start + VO_LEAD)}" data-duration="${r2(Math.max(0.5, voDur - 0.06))}" data-track-index="1"></audio>`;
 });
 
+const bgmCfg = renderCfg.bgm || {};
+const hasBgm = bgmCfg.file && existsSync(`${root}/video/${bgmCfg.file}`);
+const bgmVol = typeof bgmCfg.volume === "number" ? bgmCfg.volume : 0.25;
+const bgmDuck = typeof bgmCfg.duckedVolume === "number" ? bgmCfg.duckedVolume : 0.08;
+if (hasBgm) {
+  rootAudio += `
+    <audio id="bgm" src="${esc(bgmCfg.file)}" data-start="0" data-duration="${total}" data-track-index="3"></audio>`;
+}
+
+let bgmJs = "";
+if (hasBgm) {
+  bgmJs = `\n    tl.set("#bgm", { volume: ${bgmVol} }, 0);`;
+  scenes.forEach((s) => {
+    const voDur = s.voSeconds || s.duration - 0.5;
+    const tIn = r2(s.start + VO_LEAD);
+    const tOut = r2(Math.min(total, tIn + voDur));
+    bgmJs += `\n    tl.to("#bgm", { volume: ${bgmDuck}, duration: 0.3, ease: "power1.out" }, ${Math.max(0, r2(tIn - 0.2))});`;
+    bgmJs += `\n    tl.to("#bgm", { volume: ${bgmVol}, duration: 0.4, ease: "power1.in" }, ${tOut});`;
+  });
+}
+
 const index = `<!doctype html>
 <html lang="en" data-resolution="landscape">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1920, height=1080" />
   <!-- GENERATED by scripts/build-video.mjs from script/scenes.json. Edit the script, not this file. -->
-  ${GSAP}
+  ${GSAP_ROOT}
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
-    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-    .draft { position: absolute; top: 56px; right: 80px; padding: 6px 16px; border: 3px solid #ffd166; color: #ffd166; border-radius: 8px; font-weight: 800; font-size: 28px; letter-spacing: .1em; opacity: .85; z-index: 10; }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: ${font}; }
+    .draft { position: absolute; top: 56px; right: 80px; padding: 6px 16px; border: 3px solid ${colors.warn}; color: ${colors.warn}; border-radius: 8px; font-weight: 800; font-size: 28px; letter-spacing: .1em; opacity: .85; z-index: 10; }
   </style>
 </head>
 <body>
@@ -202,7 +242,7 @@ ${FINAL ? "" : `    <div id="draft-tag" class="clip draft" data-start="0" data-d
   </div>
   <script>
     window.__timelines = window.__timelines || {};
-    const tl = gsap.timeline({ paused: true });
+    const tl = gsap.timeline({ paused: true });${bgmJs}
     window.__timelines["main"] = tl;
     tl.seek(0);
   </script>

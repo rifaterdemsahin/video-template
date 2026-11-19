@@ -32,6 +32,24 @@ if (S) {
     if (typeof s.voSeconds === "number" && s.voSeconds + 0.25 > s.duration) err(`${id}: voice (${s.voSeconds}s) does not fit the ${s.duration}s slot (run node scripts/retime.mjs)`);
     const text = JSON.stringify([s.vo, s.overlay, s.broll, s.ph, s.realAsset]);
     if (text.includes("<<")) warn(`${id}: still has <<...>> placeholder text`);
+    else {
+      // Pacing & readability checks on filled scenes
+      const words = String(s.vo).trim().split(/\s+/).filter(Boolean).length;
+      const talkSec = typeof s.voSeconds === "number" ? s.voSeconds : Math.max(1, (s.duration || 1) - 1.5);
+      const wpm = Math.round((words / talkSec) * 60);
+      if (words >= 10 && wpm > 160) warn(`${id}: speech rate is fast (~${wpm} WPM; target 120-150 WPM)`);
+      if (words >= 10 && wpm < 100) warn(`${id}: speech rate is slow (~${wpm} WPM; target 120-150 WPM)`);
+      if (Array.isArray(s.overlay)) {
+        const [headline, ...bodyLines] = s.overlay;
+        const headWords = String(headline || "").trim().split(/\s+/).filter(Boolean).length;
+        if (headWords > 6) warn(`${id}: overlay headline has ${headWords} words (recommended <= 6)`);
+        if (bodyLines.length > 4) warn(`${id}: overlay has ${bodyLines.length} body lines (recommended <= 4)`);
+        bodyLines.forEach((line, idx) => {
+          const lw = String(line).trim().split(/\s+/).filter(Boolean).length;
+          if (lw > 10) warn(`${id}: overlay line ${idx + 1} has ${lw} words (keep concise, <= 10)`);
+        });
+      }
+    }
     const bg = s.bg || "calm";
     if (!plates.includes(bg) && !existsSync(`${root}/video/assets/bg/${bg}.jpg`)) err(`${id}: bg "${bg}" is not in prompts/backgrounds.json and has no image in video/assets/bg/`);
     if (!existsSync(`${root}/video/assets/bg/${bg}.jpg`)) warn(`${id}: missing video/assets/bg/${bg}.jpg (scripts/gen-backgrounds.sh)`);

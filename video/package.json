@@ -7,5 +7,8 @@
     "check": "npx --yes hyperframes@0.9.67 check",
     "render": "npx --yes hyperframes@0.9.67 render",
     "publish": "npx --yes hyperframes@0.9.67 publish"
+  },
+  "dependencies": {
+    "gsap": "^3.15.1"
   }
 }

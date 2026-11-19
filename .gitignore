@@ -8,6 +8,7 @@ node_modules/
 .DS_Store
 video/.hyperframes/
 video/.thumbnails/
+plan/storyboard.html
 
 # media: never commit footage, audio, images or renders (generate them, or keep them in cloud storage)
 *.mp4

@@ -1,0 +1,12 @@
+{
+  "_about": "Visual style tokens read by scripts/build-video.mjs.",
+  "colors": {
+    "ink": "#ffffff",
+    "accent": "#4cc3d9",
+    "warn": "#ffd166",
+    "tagText": "#04222a",
+    "loadText": "#3a2a00"
+  },
+  "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+  "safeAreaPaddingPx": 60
+}

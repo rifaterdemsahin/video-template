@@ -3,9 +3,19 @@
 # The text is HTML on purpose: AI image models garble text. Usage: scripts/build-thumbnails.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
-CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
+
+if [ -z "${CHROME:-}" ]; then
+  CHROME=$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)
+  if [ -z "$CHROME" ] && [ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]; then
+    CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  fi
+fi
+[ -n "${CHROME:-}" ] && [ -x "$CHROME" ] || { echo "Chrome/Chromium not found. Install Chrome/Chromium or set CHROME=/path/to/chrome" >&2; exit 1; }
+command -v ffmpeg >/dev/null 2>&1 || { echo "ffmpeg not found. Please install ffmpeg." >&2; exit 1; }
+
 TMP=$(mktemp -d)
 for f in thumbnails/thumb-*.html; do
+  [ -e "$f" ] || continue
   name=$(basename "$f" .html)
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
     --window-size=1280,720 --screenshot="$TMP/$name.png" "file://$PWD/$f" >/dev/null 2>&1

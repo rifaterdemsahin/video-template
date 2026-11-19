@@ -15,7 +15,7 @@ A template for producing a video with [Hyperframes](https://hyperframes.heygen.c
 7. Build and review: `scripts/render.sh draft`. Work through `checklists/production.md`.
 8. Release: `scripts/build-thumbnails.sh`, `scripts/render.sh final`, then `checklists/release.md`.
 
-Needs: Node 20+, `jq`, `ffmpeg`, and Google Chrome (thumbnails). Paths in `scripts/build-thumbnails.sh` assume macOS; set `CHROME` to use another browser.
+Needs: Node 20+, `ffmpeg`, and Google Chrome/Chromium (thumbnails). Chrome is auto-detected on Linux and macOS (or set `CHROME` to override).
 
 ## What is in here
 
@@ -27,10 +27,10 @@ Needs: Node 20+, `jq`, `ffmpeg`, and Google Chrome (thumbnails). Paths in `scrip
 | `plan/` | Outline and shot list |
 | `checklists/` | Plan, build, release |
 | `prompts/` | Background plate prompts and AI assistant prompts |
-| `presets/` | Render settings (`render.json`) and caption rules (`captions.md`) |
-| `thumbnails/` | HTML thumbnail template |
+| `presets/` | Render settings (`render.json`), style tokens (`style.json`), and caption rules (`captions.md`) |
+| `thumbnails/` | HTML thumbnail templates (`thumb-a.html`, `thumb-b.html`, `thumb-c.html`) |
 | `video/` | Hyperframes project; `assets/` folders are empty and git-ignored for media |
-| `scripts/` | `build-video.mjs`, `validate.mjs`, `retime.mjs`, `render.sh`, `gen-backgrounds.sh`, `gen-voiceover.sh`, `build-thumbnails.sh`, `fill-placeholders.mjs` |
+| `scripts/` | `build-video.mjs`, `build-storyboard.mjs`, `validate.mjs`, `retime.mjs`, `render.sh`, `gen-backgrounds.sh`, `gen-voiceover.sh`, `build-thumbnails.sh`, `fill-placeholders.mjs`, `new-episode.sh` |
 | `AGENTS.md` | Instructions for AI coding agents |
 
 ## Notes

@@ -40,11 +40,17 @@ Results of a sanity check of this template, and what is still open. Status: ✅ 
 | # | Idea | Why | Effort |
 |---|---|---|---|
 | A | 🎬 Render a real video from a fresh copy | Not verified so far: `render.sh`, a full MP4 and the fal.ai scripts with a real key. Best first step. | Small |
-| B | 🖥️ Add the review website | The source repo has a storyboard, kanban and Pages review loop. They are tied to one video's content, so they need genericising. | Large |
-| C | 🎞️ More thumbnail variants | Only `thumb-a.html` ships. A second layout would support A/B testing. | Small |
-| D | 🧩 Several videos per repo | Today it is one repo per video, and `new-video.sh` runs once per copy. A `videos/<slug>/` layout would allow a series in one repo. | Large |
-| E | 🪟 Cross-platform helper scripts | `build-thumbnails.sh` assumes macOS paths. `CHROME` can be overridden, but `stat` and other flags may differ on Linux. | Medium |
-| F | 🎨 Move palette and font into config | Colours and fonts are fixed in `scripts/build-video.mjs`. A small style preset would avoid editing the script. | Medium |
+
+### Newly Implemented (2026-11-19)
+- ✅ **Cross-platform Chrome & no `jq` dependency**: `scripts/build-thumbnails.sh` auto-detects Chrome/Chromium on Linux and macOS; `render.sh`, `gen-voiceover.sh`, and `gen-backgrounds.sh` use Node.js instead of `jq`.
+- ✅ **Local GSAP bundle**: `gsap` is installed in `video/package.json` and referenced locally by `build-video.mjs` (with CDN fallback) for deterministic offline renders.
+- ✅ **Style preset (`presets/style.json`)**: Colors and fonts extracted from `build-video.mjs` into `presets/style.json`.
+- ✅ **BGM & ducking support**: Optional `bgm` config in `presets/render.json` mounts `assets/bgm.mp3` with GSAP volume ducking during voiceover clips.
+- ✅ **Automated YouTube chapters**: `scripts/retime.mjs` exports formatted `mm:ss` chapters into `spec/publish.json`.
+- ✅ **Pacing & readability linter**: `scripts/validate.mjs` warns on fast/slow WPM and overly dense overlays.
+- ✅ **Static storyboard reviewer**: `scripts/build-storyboard.mjs` generates `plan/storyboard.html` for visual/audio review without rendering.
+- ✅ **Thumbnail A/B variants**: Added `thumbnails/thumb-b.html` and `thumbnails/thumb-c.html`.
+- ✅ **Multi-video series support**: Added `scripts/new-episode.sh <slug>` for `videos/<slug>/` series layouts.
 
 ## Notes
 - The source project had no DaVinci Resolve presets, so `presets/` holds Hyperframes render settings and caption rules instead.

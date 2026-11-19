@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Thumbnail C: {{SLUG}}</title>
+<!-- 1280x720. Six words or fewer. Before/After comparison card layout. All text is HTML. -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{width:1280px;height:720px;overflow:hidden;background:#000}
+.t{position:relative;width:1280px;height:720px;background:url(../video/assets/bg/calm.jpg) center/cover #0b1a2b;font-family:Impact,"Arial Black",sans-serif;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:48px}
+.t:before{content:"";position:absolute;inset:0;background:rgba(5,10,20,.72)}
+.series{position:relative;z-index:1;font-family:system-ui,sans-serif;font-weight:800;font-size:30px;color:#ffd166;letter-spacing:.1em;text-transform:uppercase;margin-bottom:24px}
+.cards{position:relative;z-index:1;display:flex;gap:36px;align-items:center;width:100%;max-width:1100px}
+.card{flex:1;padding:44px 32px;border-radius:20px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.before{background:#1e293b;border:5px solid #ef4444}
+.after{background:#042f2e;border:5px solid #4cc3d9}
+.lbl{font-family:system-ui,sans-serif;font-size:28px;font-weight:800;letter-spacing:.08em;margin-bottom:14px}
+.before .lbl{color:#f87171}
+.after .lbl{color:#4cc3d9}
+.val{font-size:88px;line-height:1.05}
+.arrow{font-size:78px;color:#ffd166;text-shadow:0 4px 12px #000}
+</style></head><body><div class="t">
+<div class="series">{{SERIES}}</div>
+<div class="cards">
+  <div class="card before"><div class="lbl">BEFORE</div><div class="val">SLOW</div></div>
+  <div class="arrow">→</div>
+  <div class="card after"><div class="lbl">AFTER</div><div class="val">FAST</div></div>
+</div>
+</div></body></html>

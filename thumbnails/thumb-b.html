@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Thumbnail B: {{SLUG}}</title>
+<!-- 1280x720. Six words or fewer. Split-screen high-contrast layout. All text is HTML. -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{width:1280px;height:720px;overflow:hidden;background:#090d16}
+.t{position:relative;width:1280px;height:720px;display:flex;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff}
+.left{width:58%;height:100%;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:64px 54px;display:flex;flex-direction:column;justify-content:center;gap:18px;border-right:6px solid #4cc3d9}
+.right{width:42%;height:100%;background:url(../video/assets/bg/desk.jpg) center/cover #0b1a2b;position:relative}
+.right:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,13,22,.65) 0%,rgba(9,13,22,.1) 60%)}
+.tag{align-self:flex-start;background:#4cc3d9;color:#04222a;font-weight:900;font-size:28px;padding:6px 18px;border-radius:8px;letter-spacing:.06em;text-transform:uppercase}
+.q{font-size:96px;line-height:1.02;font-weight:900;letter-spacing:-.02em}
+.hi{color:#ffd166;display:block;font-size:114px}
+</style></head><body><div class="t">
+<div class="left">
+  <div class="tag">{{SERIES}}</div>
+  <div class="q">WHY THIS <span class="hi">MATTERS</span></div>
+</div>
+<div class="right"></div>
+</div></body></html>
