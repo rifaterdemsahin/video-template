@@ -1,0 +1,42 @@
+{
+  "titles": [
+    {
+      "text": "{{VIDEO_TITLE}}",
+      "why": "<<Why this one>>",
+      "recommended": true,
+      "pair": "A"
+    },
+    {
+      "text": "<<Title option 2>>",
+      "why": "<<Why>>",
+      "recommended": false,
+      "pair": "B"
+    }
+  ],
+  "descriptionTemplate": "<<Two lines that carry the hook.>>\n\n<<What the video covers, as bullets.>>\n\nCHAPTERS\n{{chapters}}\n\nNEXT\n<<Links to the next part and community: write [LINK] where you still need one>>\n\n{{disclaimer}}\n\n#<<Tag1>> #<<Tag2>> #<<Tag3>>",
+  "tags": [
+    "<<keyword>>"
+  ],
+  "pinnedComment": "<<A question for viewers>>",
+  "thumbnails": [
+    {
+      "file": "thumbnails/thumb-a.jpg",
+      "html": "thumbnails/thumb-a.html",
+      "name": "A: <<idea>>",
+      "idea": "<<What it shows and why>>",
+      "recommended": true
+    }
+  ],
+  "thumbnailRules": [
+    "1280 x 720, 16:9, JPG, under 2 MB (YouTube's guidance).",
+    "Six words or fewer of text, large enough to read at 168 x 94 pixels.",
+    "All text is HTML, never AI-drawn, so it can be edited and is spelled right.",
+    "When you have a clear photo of your face, add it on the clear side: expression matters more than polish.",
+    "Do not promise an outcome you cannot guarantee."
+  ],
+  "openItems": [
+    "<<What you still need before publishing>>"
+  ],
+  "publishDate": "{{PUBLISH_DATE}}",
+  "series": "{{SERIES}}"
+}

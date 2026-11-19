@@ -1,0 +1,7 @@
+# Fill this in, then run: ./new-video.sh <slug>
+# new-video.sh replaces every {{PLACEHOLDER}} in the repo with these values (once).
+title: "{{VIDEO_TITLE}}"          # e.g. How I Set Up X (Part 1/3)
+series: "{{SERIES}}"              # "Standalone", or "Part 1 of 3: what the other parts cover"
+publish_date: "{{PUBLISH_DATE}}"  # YYYY-MM-DD
+# Set by new-video.sh. Do not edit.
+slug: "{{SLUG}}"

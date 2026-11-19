@@ -1,0 +1,65 @@
+{
+  "specVersion": "1.0",
+  "title": "{{VIDEO_TITLE}}",
+  "series": "{{SERIES}}",
+  "owner": "<<Who owns it>>",
+  "audience": "<<Who is this for?>>",
+  "goal": "<<What should the viewer understand or do afterwards?>>",
+  "singleCallToAction": "<<The one thing you ask viewers to do>>",
+  "tone": "<<Three words: how it should feel>>",
+  "targetLengthSeconds": 180,
+  "language": "en-GB",
+  "disclaimer": "<<Any required disclaimer, or empty text>>",
+  "format": {
+    "resolution": "1920x1080",
+    "fps": 30,
+    "container": "MP4 (H.264)",
+    "quality": "Hyperframes default 'looks' (CRF 16); 'draft' for review cuts",
+    "render": "Local, npx hyperframes render, pin the hyperframes version in video/package.json"
+  },
+  "voice": {
+    "now": "<<Draft voice used for timing, or none>>",
+    "final": "<<Who records the final voice>>",
+    "captions": "<<Burned in, or sidecar file>>"
+  },
+  "rules": [
+    "No AI-generated text, numbers, documents or screens. Every figure on screen is editable HTML text.",
+    "Real footage for real things.",
+    "No secrets in the repo. Keys live in a git-ignored .env.",
+    "One call to action per video.",
+    "<<Add your own rules: privacy, legal, brand>>"
+  ],
+  "acceptance": [
+    "Final MP4 plays end to end at the target resolution and frame rate, audio in sync.",
+    "Every scene in scenes.json appears in order within about 1 second of its slot.",
+    "npm run check passes and snapshots of every scene were looked at.",
+    "Captions present and inside the safe area.",
+    "Chapters, title, description and thumbnail ready.",
+    "<<Add your own criteria>>"
+  ],
+  "risks": [
+    {
+      "risk": "<<What could go wrong?>>",
+      "mitigation": "<<What you will do about it>>"
+    }
+  ],
+  "decisions": [
+    {
+      "item": "Palette and font",
+      "status": "Open",
+      "owner": "<<who>>"
+    },
+    {
+      "item": "Music",
+      "status": "Open",
+      "owner": "<<who>>"
+    },
+    {
+      "item": "Final voice",
+      "status": "Open",
+      "owner": "<<who>>"
+    }
+  ],
+  "slug": "{{SLUG}}",
+  "publishDate": "{{PUBLISH_DATE}}"
+}

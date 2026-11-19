@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Thumbnail A: {{SLUG}}</title>
+<!-- 1280x720. Six words or fewer. All text is HTML, never AI-drawn. Background plate comes from video/assets/bg (see prompts/backgrounds.json). -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{width:1280px;height:720px;overflow:hidden;background:#000}
+.t{position:relative;width:1280px;height:720px;background:url(../video/assets/bg/goal.jpg) center/cover #0b1a2b;font-family:Impact,"Arial Black",sans-serif;color:#fff}
+.t:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0000 0%,#000a 45%,#000d 100%)}
+.col{position:absolute;right:56px;top:70px;width:640px;text-align:left}
+.l1{font-size:92px;letter-spacing:2px;text-shadow:0 4px 0 #000,0 0 24px #000}
+.l2{font-size:158px;line-height:.95;color:#ffd400;letter-spacing:1px;text-shadow:0 6px 0 #000,0 0 30px #000}
+.l3{display:inline-block;margin-top:26px;padding:6px 34px 10px;background:#e11d2e;font-size:128px;line-height:1;transform:skew(-6deg);box-shadow:0 8px 0 #000}
+.b{position:absolute;left:36px;top:30px;background:#000c;border:3px solid #ffd400;color:#ffd400;font-size:40px;padding:2px 18px 4px;letter-spacing:2px}
+</style></head><body><div class="t">
+<div class="b">{{SERIES}}</div>
+<div class="col"><div class="l1">LINE ONE</div><div class="l2">HOOK</div><div class="l3">PAYOFF</div></div>
+</div></body></html>

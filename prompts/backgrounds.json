@@ -1,0 +1,10 @@
+{
+  "_about": "One text-free background plate per name. A scene's \"bg\" in script/scenes.json picks one. Run scripts/gen-backgrounds.sh. Existing images are skipped; delete one to regenerate it.",
+  "suffix": "no text, no letters, no numbers, no logos, no watermark",
+  "model": "fal-ai/flux/schnell",
+  "plates": {
+    "goal": "<<moody abstract background that suits the hook, cinematic, shallow depth of field>>",
+    "desk": "<<overhead view of a tidy desk with a laptop, soft window light, muted tones, blurred>>",
+    "calm": "<<soft dark gradient with gentle bokeh lights, minimal>>"
+  }
+}

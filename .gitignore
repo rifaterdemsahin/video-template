@@ -1,0 +1,39 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# caches and dependencies
+node_modules/
+.DS_Store
+video/.hyperframes/
+video/.thumbnails/
+
+# media: never commit footage, audio, images or renders (generate them, or keep them in cloud storage)
+*.mp4
+*.mov
+*.m4v
+*.mkv
+*.avi
+*.webm
+*.mxf
+*.mp3
+*.wav
+*.aac
+*.m4a
+*.flac
+*.ogg
+*.aif
+*.aiff
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.gif
+*.heic
+*.psd
+*.drp
+*.prproj
+*.fcpxml
+video/renders/*
+!video/renders/.gitkeep

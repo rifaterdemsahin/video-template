@@ -1,0 +1,55 @@
+{
+  "title": "{{VIDEO_TITLE}}",
+  "slug": "{{SLUG}}",
+  "totalSecondsApprox": 45,
+  "scenes": [
+    {
+      "id": "s01-hook",
+      "label": "HOOK",
+      "title": "Hook",
+      "start": 0,
+      "duration": 15,
+      "broll": "<<What is on screen: footage, graphic, face cam>>",
+      "vo": "<<The exact words you say in this scene. One idea, two or three sentences.>>",
+      "realAsset": null,
+      "bg": "goal",
+      "overlay": [
+        "<<Headline on screen>>",
+        "<<Optional second line>>"
+      ],
+      "ph": null
+    },
+    {
+      "id": "s02-main",
+      "label": "CHAPTER 1",
+      "title": "Main point",
+      "start": 15,
+      "duration": 20,
+      "broll": "<<Footage or graphic>>",
+      "vo": "<<The main point, in your own words.>>",
+      "realAsset": "<<Footage you must supply, or null>>",
+      "bg": "desk",
+      "overlay": [
+        "<<Headline>>",
+        "<<Line 1>>",
+        "<<Line 2>>"
+      ],
+      "ph": "<<Placeholder text shown until the real footage is added, or null>>"
+    },
+    {
+      "id": "s03-cta",
+      "label": "CTA",
+      "title": "Call to action",
+      "start": 35,
+      "duration": 10,
+      "broll": "<<End card>>",
+      "vo": "<<The one thing you ask viewers to do.>>",
+      "realAsset": null,
+      "bg": "calm",
+      "overlay": [
+        "<<The one call to action>>"
+      ],
+      "ph": null
+    }
+  ]
+}
