@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Video Production Maturity Matrix · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">🔍 2 Review → Maturity Matrix</p>
+    <h1>📊 Video Production Maturity Matrix</h1>
+    <p class="lead">Current state evaluation for <code>{{VIDEO_TITLE}}</code> (template <code>v1.1.0</code>), synced with <code>docs/MATURITY.md</code>.</p>
+
+    <div class="tldr" style="margin-top:16px">
+      <strong>Current Overall Score: 3.8 / 5 → Level 4 (Automated)</strong><br>
+      <small>Up from 3.2 / 5 baseline. Strongest: Planning, Scripting, Build, Quality Checks, Packaging, Review Loop, Reuse, Hygiene. To reach <b>Level 5 (Proven)</b>: execute one full live render with <code>FAL_KEY</code> + <code>ffmpeg</code> via <code>scripts/verify-e2e.sh</code>.</small>
+    </div>
+
+    <h2>🪜 Maturity Levels</h2>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Level</th><th>Name</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>🌱 Ad hoc</td><td>Done by hand each time. Depends on the person.</td></tr>
+          <tr><td>2</td><td>📝 Documented</td><td>Steps written down (checklist or README), still done by hand.</td></tr>
+          <tr><td>3</td><td>⚙️ Templated</td><td>Files and structure come from a template. Some steps are scripted.</td></tr>
+          <tr><td>4</td><td>🤖 Automated</td><td>Steps run by script, with automated checks and CI gates that block bad output.</td></tr>
+          <tr><td>5</td><td>🔁 Proven</td><td>Verified end-to-end on real videos, measured, and improved from results.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>📋 Current State Evaluation (10 Areas)</h2>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Score</th><th>Current Evidence</th><th>To Reach Level 5</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>📋 Planning</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td><code>panel/index.html</code> bulk setup, <code>video.yaml</code>, <code>spec/project.json</code>, <code>budgetMaxUsd &le; $2</code>, <code>videoFormat</code>, <code>plan/outline.md</code>.</td>
+            <td>Track actual vs. planned time &amp; budget across 3+ videos.</td>
+          </tr>
+          <tr>
+            <td>✍️ Scripting</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td><code>script/scenes.json</code> schema, WPM speech-rate linter, &le; 6-word headline &amp; &le; 15s hook linter in <code>validate.mjs</code>.</td>
+            <td>Measure retention drop-off against hook/scene pacing.</td>
+          </tr>
+          <tr>
+            <td>🎨 Assets</td>
+            <td><span class="badge warn">3 / 5</span></td>
+            <td><code>gen-backgrounds.sh</code>, <code>gen-voiceover.sh</code> (-14 LUFS), <code>normalize-audio.sh</code>, real <code>footage/&lt;id&gt;.*</code> embedding.</td>
+            <td>Run live <code>FAL_KEY</code> generation and replace all <code>ph</code> slots.</td>
+          </tr>
+          <tr>
+            <td>🏗️ Build</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td><code>build-video.mjs</code>, <code>presets/style.json</code> (8 Art Director layers), BGM ducking, local GSAP, <code>retime.mjs</code>.</td>
+            <td>Verify custom theme presets across multiple series episodes.</td>
+          </tr>
+          <tr>
+            <td>🧪 Quality checks</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td><code>npm test</code> (4/4), <code>npm run eval</code> (7/7), <code>validate.mjs --strict</code>, CI <code>check.yml</code>, <code>hyperframes check</code>, auto-snapshots.</td>
+            <td>Add visual snapshot diffing in CI on rendered frames.</td>
+          </tr>
+          <tr>
+            <td>🎬 Render &amp; delivery</td>
+            <td><span class="badge warn">3 / 5</span></td>
+            <td><code>render.sh draft|final</code>, <code>verify-e2e.sh</code>, <code>presets/render.json</code>. Not yet run end-to-end with live <code>FAL_KEY</code> + <code>ffmpeg</code>.</td>
+            <td>Produce and watch a full final 1080p MP4 from a fresh copy.</td>
+          </tr>
+          <tr>
+            <td>📦 Packaging</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td>Auto-exported YouTube chapters, <code>thumb-a/b/c.html</code>, <code>168&times;94</code> mobile previews in <code>publish.html</code>, cross-platform <code>build-thumbnails.sh</code>.</td>
+            <td>Log YouTube CTR across A/B/C thumbnail variants.</td>
+          </tr>
+          <tr>
+            <td>👀 Review loop</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td>Templated GitHub Pages site, <code>nav.js</code>, section-by-section <code>feedback.js</code> + GitHub Issue export, auto-built <code>plan/storyboard.html</code>.</td>
+            <td>Complete one external reviewer sign-off cycle via Pages.</td>
+          </tr>
+          <tr>
+            <td>🚀 Reuse &amp; onboarding</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td>GitHub template, <code>new-video.sh</code>, <code>init-panel.mjs</code>, RCCT prompt <code>.md</code> download, <code>new-episode.sh</code> series support, zero-<code>jq</code> scripts.</td>
+            <td>Onboard a second video or series episode using the exported prompt.</td>
+          </tr>
+          <tr>
+            <td>🔒 Hygiene &amp; safety</td>
+            <td><span class="badge ok">4 / 5</span></td>
+            <td><code>.gitignore</code> blocks media/secrets, <code>.env.example</code>, CI secret/media scan, password-masked API keys excluded from <code>localStorage</code>.</td>
+            <td>Add local git <code>pre-commit</code> hook mirror of CI check.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="next">
+      <a href="kanban.html">← Kanban Board</a>
+      <a href="review.html">Review Hub →</a>
+    </div>
+  </main>
+</body>
+</html>

@@ -32,7 +32,7 @@ test("all core JSON configs parse and contain required schema fields", () => {
 
 test("all website pages, thumbnails, and shared assets exist and wire nav.js", () => {
   const rootPages = [
-    "index.html", "master-spec.html", "script.html", "review.html",
+    "index.html", "master-spec.html", "script.html", "review.html", "maturity.html",
     "kanban.html", "publish.html", "release-checklist.html", "recommendations.html", "agents.html"
   ];
   for (const p of rootPages) {

@@ -21,6 +21,7 @@
       label: "🔍 2 Review",
       items: [
         ["📝 Review Hub", "review.html"],
+        ["📊 Maturity Matrix", "maturity.html"],
         ["📋 Kanban Board", "kanban.html"]
       ]
     },
