@@ -264,9 +264,11 @@
       </section>
 
       <div class="actions">
-        <div id="statusMsg" class="status">Fill out the fields above and click Initialize.</div>
+        <div id="statusMsg" class="status">Fill out the fields above and click Initialize or Download Initial Prompt.</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button type="button" id="downloadBtn" class="btn btn-secondary">⬇️ Download JSON Bundle</button>
+          <button type="button" id="copyPromptBtn" class="btn btn-secondary">📋 Copy Initial Prompt</button>
+          <button type="button" id="dlPromptBtn" class="btn btn-secondary">⬇️ Download Prompt (.md)</button>
+          <button type="button" id="downloadBtn" class="btn btn-secondary">⬇️ Download JSON</button>
           <button type="submit" id="submitBtn" class="btn btn-primary">🚀 Initialize Video</button>
         </div>
       </div>
@@ -400,6 +402,107 @@
         totalSecondsApprox: t
       };
     };
+
+    const buildInitialPrompt = (p) => {
+      const slug = p.video.slug || "my-new-video";
+      const title = p.video.title || "Untitled Video";
+      return `# Bootstrap New Video Repository: ${title}
+
+Create a new GitHub repository from \`rifaterdemsahin/video-template\` and initialize it with the full specification below.
+
+## 1. Create & Clone Repository
+\`\`\`bash
+gh repo create ${slug} --template rifaterdemsahin/video-template --public --clone
+cd ${slug}
+\`\`\`
+
+## 2. Fill \`video.yaml\` and Run Scaffolding
+Write \`video.yaml\`:
+\`\`\`yaml
+title: ${JSON.stringify(title)}
+series: ${JSON.stringify(p.video.series)}
+publish_date: ${JSON.stringify(p.video.publish_date)}
+slug: "{{SLUG}}"
+\`\`\`
+
+Run once:
+\`\`\`bash
+./new-video.sh ${slug}
+\`\`\`
+
+## 3. Update \`spec/project.json\`
+Set these fields in \`spec/project.json\`:
+\`\`\`json
+${JSON.stringify({
+  title,
+  series: p.video.series,
+  slug,
+  owner: p.brief.owner,
+  audience: p.brief.audience,
+  goal: p.brief.goal,
+  singleCallToAction: p.brief.singleCallToAction,
+  tone: p.brief.tone,
+  targetLengthSeconds: p.totalSecondsApprox,
+  language: p.brief.language,
+  disclaimer: p.brief.disclaimer
+}, null, 2)}
+\`\`\`
+
+## 4. Update \`presets/style.json\` & \`prompts/backgrounds.json\`
+Update \`presets/style.json\` colors:
+\`\`\`json
+${JSON.stringify({ colors: { accent: p.style.accent, warn: p.style.warn } }, null, 2)}
+\`\`\`
+
+Update \`prompts/backgrounds.json\` plates:
+\`\`\`json
+${JSON.stringify({ plates: p.plates }, null, 2)}
+\`\`\`
+
+## 5. Write \`script/scenes.json\`
+\`\`\`json
+${JSON.stringify({ title, slug, totalSecondsApprox: p.totalSecondsApprox, scenes: p.scenes }, null, 2)}
+\`\`\`
+
+## 6. Build, Validate, Generate Assets & Deploy
+\`\`\`bash
+node scripts/retime.mjs
+node scripts/build-video.mjs
+node scripts/build-storyboard.mjs
+node scripts/validate.mjs
+# Optional (requires FAL_KEY in .env):
+# scripts/gen-backgrounds.sh && scripts/gen-voiceover.sh
+# Render draft:
+# scripts/render.sh draft
+git add -A && git commit -m "feat: initialize ${slug}" && git push origin main
+\`\`\`
+`;
+    };
+
+    document.getElementById("dlPromptBtn").addEventListener("click", () => {
+      const payload = collectPayload();
+      const md = buildInitialPrompt(payload);
+      const blob = new Blob([md], { type: "text/markdown" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${payload.video.slug || "video"}-initial-prompt.md`;
+      a.click();
+      const statusEl = document.getElementById("statusMsg");
+      statusEl.className = "status ok";
+      statusEl.textContent = `⬇️ Downloaded ${payload.video.slug || "video"}-initial-prompt.md`;
+    });
+
+    document.getElementById("copyPromptBtn").addEventListener("click", async () => {
+      const payload = collectPayload();
+      const md = buildInitialPrompt(payload);
+      await navigator.clipboard.writeText(md);
+      const outEl = document.getElementById("cliOutput");
+      outEl.style.display = "block";
+      outEl.textContent = md;
+      const statusEl = document.getElementById("statusMsg");
+      statusEl.className = "status ok";
+      statusEl.textContent = "📋 Initial repo prompt copied to clipboard!";
+    });
 
     document.getElementById("downloadBtn").addEventListener("click", () => {
       const payload = collectPayload();
