@@ -265,22 +265,15 @@
         <h2>4. Draft Script / Outline (<code>plan/outline.md</code>)</h2>
         <div class="field">
           <label for="draftScript">Rough Draft Script or Talking Points</label>
-          <span class="hint">Paste your raw script, bullet points, or narrative beats here. It will be saved to <code>plan/outline.md</code> and included in the generated repo prompt.</span>
-          <textarea id="draftScript" style="min-height:130px" placeholder="Hook: ...&#10;Main Point 1: ...&#10;Main Point 2: ...&#10;CTA: Join the community..."></textarea>
+          <span class="hint">Paste your raw script, bullet points, or narrative beats here. The generated prompt will instruct the AI agent to estimate scenes, timings (~130 WPM), overlays, and B-roll in <code>script/scenes.json</code> from this draft.</span>
+          <textarea id="draftScript" style="min-height:150px" placeholder="Hook: ...&#10;Main Point 1: ...&#10;Main Point 2: ...&#10;CTA: Join the community..."></textarea>
         </div>
       </section>
 
-      <!-- 5. Scenes -->
-      <section>
-        <h2>5. Scenes (<code>script/scenes.json</code>)</h2>
-        <div id="scenesList"></div>
-        <button type="button" id="addSceneBtn" class="btn btn-secondary">+ Add Scene</button>
-      </section>
-
-      <!-- 6. Live Generated Prompt -->
+      <!-- 5. Live Generated Prompt -->
       <section>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-          <h2 style="margin:0">6. Generated Initial Repo Prompt (Download Ready)</h2>
+          <h2 style="margin:0">5. Generated Initial Repo Prompt (Download Ready)</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button type="button" id="copyPromptInlineBtn" class="btn btn-secondary">📋 Copy Prompt</button>
             <button type="button" id="dlPromptInlineBtn" class="btn btn-primary">⬇️ Download Prompt (.md)</button>
@@ -324,47 +317,6 @@
     syncColor("accentColor", "accentHex");
     syncColor("warnColor", "warnHex");
 
-    const defaultScenes = [
-      { id: "s01-hook", label: "HOOK", title: "Hook", duration: 15, bg: "goal", overlay: "Headline on screen\nOptional second line", vo: "", broll: "Opening visual or face cam", ph: "" },
-      { id: "s02-main", label: "CHAPTER 1", title: "Main point", duration: 20, bg: "desk", overlay: "Main Headline\nKey point one\nKey point two", vo: "", broll: "Screen recording or demo", ph: "Placeholder until footage is added" },
-      { id: "s03-cta", label: "CTA", title: "Call to action", duration: 10, bg: "calm", overlay: "Next Step", vo: "", broll: "End card", ph: "" }
-    ];
-
-    const scenesList = document.getElementById("scenesList");
-    const addSceneCard = (s = {}) => {
-      const idx = scenesList.children.length + 1;
-      const div = document.createElement("div");
-      div.className = "scene-card";
-      div.innerHTML = `
-        <div class="scene-head">
-          <span class="scene-title">Scene #${idx}</span>
-          <button type="button" class="btn btn-danger" onclick="this.closest('.scene-card').remove()">Remove</button>
-        </div>
-        <div class="grid">
-          <div class="field"><label>Scene ID</label><input class="sc-id" required value="${s.id || `s0${idx}-scene`}" /></div>
-          <div class="field"><label>Label Tag</label><input class="sc-label" required value="${s.label || `CHAPTER ${idx}`}" /></div>
-          <div class="field"><label>Chapter Title</label><input class="sc-title" required value="${s.title || `Scene ${idx}`}" /></div>
-          <div class="field"><label>Duration (sec)</label><input class="sc-dur" type="number" min="2" required value="${s.duration || 15}" /></div>
-          <div class="field"><label>Background Plate</label>
-            <select class="sc-bg">
-              <option value="goal" ${s.bg === "goal" ? "selected" : ""}>goal</option>
-              <option value="desk" ${s.bg === "desk" ? "selected" : ""}>desk</option>
-              <option value="calm" ${s.bg === "calm" ? "selected" : ""}>calm</option>
-            </select>
-          </div>
-          <div class="field"><label>B-Roll Description</label><input class="sc-broll" value="${s.broll || ""}" placeholder="What is on screen?" /></div>
-        </div>
-        <div class="grid" style="margin-top:10px">
-          <div class="field"><label>Voiceover Script (130 WPM)</label><textarea class="sc-vo" required placeholder="Exact spoken words for this scene...">${s.vo || ""}</textarea></div>
-          <div class="field"><label>On-Screen Overlay (1st line = headline, max 4 bullets)</label><textarea class="sc-overlay" required>${s.overlay || ""}</textarea></div>
-        </div>
-        <div class="field" style="margin-top:10px"><label>Placeholder Box (optional)</label><input class="sc-ph" value="${s.ph || ""}" placeholder="Leave blank if no placeholder frame needed" /></div>
-      `;
-      scenesList.appendChild(div);
-    };
-    defaultScenes.forEach(addSceneCard);
-    document.getElementById("addSceneBtn").addEventListener("click", () => addSceneCard());
-
     let hasServer = false;
     fetch("/api/health").then(r => r.ok ? r.json() : null).then(d => {
       if (d && d.ok) {
@@ -378,27 +330,9 @@
     });
 
     const collectPayload = () => {
-      let t = 0;
-      const scenes = [...scenesList.querySelectorAll(".scene-card")].map(card => {
-        const dur = Number(card.querySelector(".sc-dur").value) || 15;
-        const overlay = card.querySelector(".sc-overlay").value.split("\n").map(x => x.trim()).filter(Boolean);
-        const phVal = card.querySelector(".sc-ph").value.trim();
-        const obj = {
-          id: card.querySelector(".sc-id").value.trim(),
-          label: card.querySelector(".sc-label").value.trim(),
-          title: card.querySelector(".sc-title").value.trim(),
-          start: t,
-          duration: dur,
-          broll: card.querySelector(".sc-broll").value.trim() || "Visual background",
-          vo: card.querySelector(".sc-vo").value.trim(),
-          realAsset: phVal ? phVal : null,
-          bg: card.querySelector(".sc-bg").value,
-          overlay: overlay.length ? overlay : ["Headline"],
-          ph: phVal || null
-        };
-        t += dur;
-        return obj;
-      });
+      const draftScript = document.getElementById("draftScript").value.trim();
+      const words = draftScript ? draftScript.split(/\s+/).filter(Boolean).length : 0;
+      const estimatedSeconds = words > 0 ? Math.max(15, Math.ceil((words / 130) * 60)) : 45;
       return {
         video: {
           title: titleEl.value.trim(),
@@ -407,7 +341,7 @@
           publish_date: document.getElementById("publish_date").value
         },
         brief: {
-          owner: document.getElementById("owner").value.trim() || "Creator",
+          owner: document.getElementById("owner").value.trim() || "Rifat Erdem Sahin",
           audience: document.getElementById("audience").value.trim(),
           goal: document.getElementById("goal").value.trim(),
           singleCallToAction: document.getElementById("cta").value.trim(),
@@ -424,9 +358,8 @@
           desk: document.getElementById("bg_desk").value.trim(),
           calm: document.getElementById("bg_calm").value.trim()
         },
-        draftScript: document.getElementById("draftScript").value.trim(),
-        scenes,
-        totalSecondsApprox: t
+        draftScript,
+        totalSecondsApprox: estimatedSeconds
       };
     };
 
@@ -482,13 +415,8 @@ ${JSON.stringify({ colors: { accent: p.style.accent, warn: p.style.warn } }, nul
 ${JSON.stringify({ plates: p.plates }, null, 2)}
 \`\`\`
 
-#### 4. \`plan/outline.md\` (Draft Script / Narrative Beats)
+#### 4. \`plan/outline.md\` (Initial Draft Script)
 ${p.draftScript ? `\`\`\`markdown\n${p.draftScript}\n\`\`\`` : "_No draft script provided yet — generate outline from the brief above._"}
-
-#### 5. \`script/scenes.json\`
-\`\`\`json
-${JSON.stringify({ title, slug, totalSecondsApprox: p.totalSecondsApprox, scenes: p.scenes }, null, 2)}
-\`\`\`
 
 ## Constraints
 - Follow all rules in \`AGENTS.md\`.
@@ -505,8 +433,13 @@ Execute the following steps in order to create the repository and load the initi
    cd ${slug}
    \`\`\`
 2. **Initialize Scaffolding**: Write \`video.yaml\` with the payload above and run \`./new-video.sh ${slug}\`.
-3. **Load Initial Data**: Populate \`spec/project.json\`, \`presets/style.json\`, \`prompts/backgrounds.json\`, \`plan/outline.md\`, and \`script/scenes.json\` with the payloads above (expanding the draft script into polished scenes if any \`vo\` fields are empty).
-4. **Build, Storyboard & Validate**:
+3. **Load Initial Data**: Populate \`spec/project.json\`, \`presets/style.json\`, \`prompts/backgrounds.json\`, and \`plan/outline.md\` with the payloads above.
+4. **Estimate & Generate \`script/scenes.json\` from the Draft Script**:
+   - Break the initial draft script in \`plan/outline.md\` into structured scenes (\`s01-hook\`, \`s02-...\`, final \`sXX-cta\`).
+   - Estimate \`duration\` per scene from the spoken word count at ~130 WPM (+ 1.5s breathing room) and compute sequential \`start\` times (estimated total: ~${p.totalSecondsApprox}s).
+   - Assign \`bg\` (\`goal\`, \`desk\`, \`calm\`), concise \`overlay\` headlines (≤ 6 words) and bullets (≤ 4 lines), \`broll\` descriptions, and \`realAsset\` / \`ph\` where footage is needed.
+   - Ensure the final scene carries the single call-to-action (\`${p.brief.singleCallToAction}\`).
+5. **Build, Storyboard & Validate**:
    \`\`\`bash
    node scripts/retime.mjs
    node scripts/build-video.mjs
@@ -530,7 +463,6 @@ Execute the following steps in order to create the repository and load the initi
     };
     document.getElementById("setupForm").addEventListener("input", refreshPromptPreview);
     document.getElementById("setupForm").addEventListener("change", refreshPromptPreview);
-    document.getElementById("addSceneBtn").addEventListener("click", () => setTimeout(refreshPromptPreview, 0));
     refreshPromptPreview();
 
     const downloadPromptMd = () => {

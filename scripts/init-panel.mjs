@@ -79,11 +79,12 @@ const server = createServer((req, res) => {
         if (d.draftScript) {
           writeFileSync(`${root}/plan/outline.md`, `# Outline: ${d.video.title}\n\n${d.draftScript}\n`);
         }
+        const existingScenes = JSON.parse(readFileSync(`${root}/script/scenes.json`, "utf8"));
         const scenesDoc = {
           title: d.video.title,
           slug,
-          totalSecondsApprox: d.totalSecondsApprox,
-          scenes: d.scenes,
+          totalSecondsApprox: d.totalSecondsApprox || existingScenes.totalSecondsApprox,
+          scenes: Array.isArray(d.scenes) && d.scenes.length ? d.scenes : existingScenes.scenes,
         };
         writeFileSync(`${root}/script/scenes.json`, JSON.stringify(scenesDoc, null, 2) + "\n");
 
