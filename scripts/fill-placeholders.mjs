@@ -1,4 +1,5 @@
-// Replaces {{VIDEO_TITLE}}, {{SERIES}}, {{PUBLISH_DATE}} and {{SLUG}} in the text files of this repo.
+// Replaces {{VIDEO_TITLE}}, {{SERIES}}, {{PUBLISH_DATE}} and {{SLUG}} in the content folders only (never in scripts, README or AGENTS.md,
+// which describe the placeholders and must keep them).
 // Usage: node scripts/fill-placeholders.mjs <slug>      (values for the first three come from video.yaml)
 import { readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
@@ -21,21 +22,18 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(vals.PUBLISH_DATE)) { console.error("publish_dat
 
 // JSON files need escaped values, everything else takes the text as is
 const forJson = (s) => JSON.stringify(s).slice(1, -1);
-const SKIP = new Set([".git", "node_modules", ".hyperframes"]);
+const ROOTS = ["script", "spec", "plan", "thumbnails", "prompts", "checklists", "presets", "video.yaml"];
 const TEXT = /\.(md|json|ya?ml|html|mjs|js|sh|txt|css)$/;
 let changed = 0;
-const walk = (dir) => {
-  for (const f of readdirSync(dir)) {
-    if (SKIP.has(f)) continue;
-    const p = join(dir, f);
-    if (statSync(p).isDirectory()) { walk(p); continue; }
-    if (!TEXT.test(f) || p === `${root}/scripts/fill-placeholders.mjs`) continue;
-    const before = readFileSync(p, "utf8");
-    if (!before.includes("{{")) continue;
-    const json = f.endsWith(".json");
-    const after = before.replace(/\{\{(VIDEO_TITLE|SERIES|PUBLISH_DATE|SLUG)\}\}/g, (_, k) => (json ? forJson(vals[k]) : vals[k]));
-    if (after !== before) { writeFileSync(p, after); changed++; }
-  }
+const walk = (p) => {
+  if (statSync(p).isDirectory()) { for (const f of readdirSync(p)) walk(join(p, f)); return; }
+  const f = p.split("/").pop();
+  if (!TEXT.test(f)) return;
+  const before = readFileSync(p, "utf8");
+  if (!before.includes("{{")) return;
+  const json = f.endsWith(".json");
+  const after = before.replace(/\{\{(VIDEO_TITLE|SERIES|PUBLISH_DATE|SLUG)\}\}/g, (_, k) => (json ? forJson(vals[k]) : vals[k]));
+  if (after !== before) { writeFileSync(p, after); changed++; }
 };
-walk(root);
+ROOTS.forEach((r) => walk(`${root}/${r}`));
 console.log(`filled placeholders in ${changed} file(s) for "${slug}"`);

@@ -28,7 +28,7 @@ Needs: Node 20+, `jq`, `ffmpeg`, and Google Chrome (thumbnails). Paths in `scrip
 | `presets/` | Render settings (`render.json`) and caption rules (`captions.md`) |
 | `thumbnails/` | HTML thumbnail template |
 | `video/` | Hyperframes project; `assets/` folders are empty and git-ignored for media |
-| `scripts/` | `build-video.mjs`, `render.sh`, `gen-backgrounds.sh`, `gen-voiceover.sh`, `build-thumbnails.sh`, `fill-placeholders.mjs` |
+| `scripts/` | `build-video.mjs`, `validate.mjs`, `retime.mjs`, `render.sh`, `gen-backgrounds.sh`, `gen-voiceover.sh`, `build-thumbnails.sh`, `fill-placeholders.mjs` |
 | `AGENTS.md` | Instructions for AI coding agents |
 
 ## Notes

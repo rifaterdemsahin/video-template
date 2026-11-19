@@ -31,7 +31,9 @@ node scripts/build-video.mjs [--final] # regenerate video/index.html + video/com
 scripts/gen-backgrounds.sh             # fal.ai text-free background plates from prompts/backgrounds.json (needs FAL_KEY in .env)
 scripts/gen-voiceover.sh [voice]       # fal.ai draft voiceover; writes voSeconds into scenes.json
 scripts/build-thumbnails.sh            # thumbnails/thumb-*.html to 1280x720 JPG (headless Chrome + ffmpeg)
-scripts/render.sh [draft|final]        # build, check and render locally into video/renders/
+node scripts/retime.mjs                # set scene start/duration from the measured voice lengths (gen-voiceover runs it)
+node scripts/validate.mjs [--strict]   # fast checks before rendering; render.sh runs it (final is strict)
+scripts/render.sh [draft|final]        # validate, build, check and render locally into video/renders/
 cd video && npm run check && npx hyperframes snapshot --at 1,3,5
 ```
 

@@ -10,7 +10,7 @@ QUALITY=$(jq -r --arg m "$MODE" '.[$m].quality' presets/render.json)
 OUT="video/renders/$(jq -r '.slug // "video"' spec/project.json)-$MODE.mp4"
 [ "$QUALITY" != "null" ] || { echo "unknown mode: $MODE (see presets/render.json)" >&2; exit 1; }
 
-if [ "$MODE" = final ]; then node scripts/build-video.mjs --final; else node scripts/build-video.mjs; fi
+if [ "$MODE" = final ]; then node scripts/validate.mjs --strict; node scripts/build-video.mjs --final; else node scripts/validate.mjs; node scripts/build-video.mjs; fi
 ( cd video && npx --yes "hyperframes@$HF" check )
 ( cd video && npx --yes "hyperframes@$HF" render --quality "$QUALITY" --output "../$OUT" )
 echo "rendered $OUT"
