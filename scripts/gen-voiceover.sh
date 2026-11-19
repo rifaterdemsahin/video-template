@@ -4,7 +4,9 @@
 # Writes video/assets/vo/<scene-id>.mp3 and stores the measured length as voSeconds in script/scenes.json.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+[ -f .env ] || { echo "no .env: copy .env.example to .env and add FAL_KEY" >&2; exit 1; }
 set -a; source .env; set +a
+[ -n "${FAL_KEY:-}" ] || { echo "FAL_KEY is empty: put your key in .env (see .env.example)" >&2; exit 1; }
 VOICE="${1:-bm_george}"
 OUT=video/assets/vo
 mkdir -p "$OUT"
@@ -12,6 +14,7 @@ mkdir -p "$OUT"
 jq -r '.scenes[].id' script/scenes.json | while read -r id; do
   [ -s "$OUT/$id.mp3" ] && { echo "skip $id"; continue; }
   text=$(jq -r --arg id "$id" '.scenes[]|select(.id==$id)|.vo' script/scenes.json)
+  case "$text" in *"<<"*) echo "skip $id: voiceover text still has <<...>> placeholders"; continue ;; esac
   url=$(curl -sS https://fal.run/fal-ai/kokoro/british-english \
     -H "Authorization: Key $FAL_KEY" -H "Content-Type: application/json" \
     --data "$(jq -n --arg p "$text" --arg v "$VOICE" '{prompt:$p,voice:$v}')" | jq -r '.audio.url')
@@ -26,9 +29,10 @@ done
 tmp=$(mktemp)
 cp script/scenes.json "$tmp"
 for f in "$OUT"/*.mp3; do
+  [ -e "$f" ] || continue
   id=$(basename "$f" .mp3)
   d=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$f")
   jq --arg id "$id" --argjson d "$(printf '%.1f' "$d")" '(.scenes[]|select(.id==$id)|.voSeconds)=$d|(.scenes[]|select(.id==$id)|.voice)="'"$VOICE"'"' "$tmp" > "$tmp.n" && mv "$tmp.n" "$tmp"
 done
 mv "$tmp" script/scenes.json
-jq -r '.scenes[]|"\(.id)\t\(.duration)s slot\t\(.voSeconds)s voice"' script/scenes.json
+node scripts/retime.mjs

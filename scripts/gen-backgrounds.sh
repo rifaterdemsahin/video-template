@@ -3,7 +3,9 @@
 # Usage: scripts/gen-backgrounds.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
+[ -f .env ] || { echo "no .env: copy .env.example to .env and add FAL_KEY" >&2; exit 1; }
 set -a; source .env; set +a
+[ -n "${FAL_KEY:-}" ] || { echo "FAL_KEY is empty: put your key in .env (see .env.example)" >&2; exit 1; }
 OUT=video/assets/bg
 mkdir -p "$OUT"
 SUFFIX=$(jq -r '.suffix' prompts/backgrounds.json)
