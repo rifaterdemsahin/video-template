@@ -349,6 +349,7 @@
       <div class="actions">
         <div id="statusMsg" class="status">Fill out the fields above and click Initialize or Download Initial Prompt.</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" id="resetBtn" class="btn btn-danger">🔄 Reset to Defaults</button>
           <button type="button" id="copyPromptBtn" class="btn btn-secondary">📋 Copy Initial Prompt</button>
           <button type="button" id="dlPromptBtn" class="btn btn-secondary">⬇️ Download Prompt (.md)</button>
           <button type="button" id="downloadBtn" class="btn btn-secondary">⬇️ Download JSON</button>
@@ -559,12 +560,52 @@ Execute the following steps in order to create the repository and load the initi
 `;
     };
 
+    const PANEL_STORAGE_KEY = "video_template_panel_draft_v1";
+    const setupForm = document.getElementById("setupForm");
+    const isPersistable = (el) => el.id && el.id !== "promptPreview" && el.type !== "password";
+
+    const restorePanelDraft = () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(PANEL_STORAGE_KEY) || "{}");
+        for (const el of setupForm.querySelectorAll("input, select, textarea")) {
+          if (isPersistable(el) && Object.prototype.hasOwnProperty.call(saved, el.id)) {
+            el.value = saved[el.id];
+          }
+        }
+        if (saved.slug) slugEdited = true;
+      } catch {}
+    };
+
+    const savePanelDraft = () => {
+      try {
+        const data = {};
+        for (const el of setupForm.querySelectorAll("input, select, textarea")) {
+          if (isPersistable(el)) data[el.id] = el.value;
+        }
+        localStorage.setItem(PANEL_STORAGE_KEY, JSON.stringify(data));
+      } catch {}
+    };
+
     const refreshPromptPreview = () => {
       document.getElementById("promptPreview").value = buildInitialPrompt(collectPayload());
     };
-    document.getElementById("setupForm").addEventListener("input", refreshPromptPreview);
-    document.getElementById("setupForm").addEventListener("change", refreshPromptPreview);
+
+    restorePanelDraft();
+    setupForm.addEventListener("input", () => { savePanelDraft(); refreshPromptPreview(); });
+    setupForm.addEventListener("change", () => { savePanelDraft(); refreshPromptPreview(); });
     refreshPromptPreview();
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (!confirm("Reset all panel fields to template defaults?")) return;
+      localStorage.removeItem(PANEL_STORAGE_KEY);
+      setupForm.reset();
+      document.getElementById("publish_date").value = today;
+      slugEdited = false;
+      refreshPromptPreview();
+      const statusEl = document.getElementById("statusMsg");
+      statusEl.className = "status ok";
+      statusEl.textContent = "🔄 Reset panel fields to defaults.";
+    });
 
     const downloadPromptMd = () => {
       const payload = collectPayload();

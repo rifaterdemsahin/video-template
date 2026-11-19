@@ -4,7 +4,7 @@
 ### Added
 - **Bulk Setup Panel & Prompt Generator** (`panel/index.html`, `scripts/init-panel.mjs`):
   - Full bulk-intake form with identity (`video.yaml`), video format (`short`, `long`, `course`, `podcast`), target audience (`Consumer`, `Professional`, `Business`), owner (`Rifat Erdem Sahin`), Skool CTA default, `< $2.00` generation budget cap (`$1.50` default), `fal.ai` & `DeepInfra` API key intake (`.env`), Art Director defaults (visual style, sound/VO, BGM, SFX, backgrounds, green key, lower thirds, transitions), and draft script (`plan/outline.md`).
-  - Live-updating **Role → Context → Constraints → Task** repo bootstrap prompt preview with one-click copy and `.md` download (`<slug>-initial-prompt.md`).
+  - Live-updating **Role → Context → Constraints → Task** repo bootstrap prompt preview with one-click copy, `.md` download (`<slug>-initial-prompt.md`), and `localStorage` draft auto-save + reset.
 - **Templated Review Website** (`index.html`, `site.css`, `nav.js`, `feedback.js`, `master-spec.html`, `script.html`, `review.html`, `kanban.html`, `publish.html`, `release-checklist.html`, `recommendations.html`, `agents.html`):
   - Shared sticky dropdown navigation, section-by-section collapsible feedback boxes, and GitHub Issue export.
   - Automatic placeholder replacement across all 19 template files via `scripts/fill-placeholders.mjs`.
