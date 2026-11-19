@@ -111,7 +111,7 @@
   ready(function () {
     var f = document.createElement("footer");
     f.id = "site-foot";
-    f.innerHTML = '🎬 <b>' + BRAND + '</b> · Series: <code>{{SERIES}}</code> · Publish: <code>{{PUBLISH_DATE}}</code> · <a href="' + G + '" target="_blank" rel="noopener">GitHub</a>';
+    f.innerHTML = '🎬 <b>' + BRAND + '</b> · template v1.1.0 · Series: <code>{{SERIES}}</code> · Publish: <code>{{PUBLISH_DATE}}</code> · <a href="' + base + 'change.log">change.log</a> · <a href="' + G + '" target="_blank" rel="noopener">GitHub</a>';
     var st = document.createElement("style");
     st.textContent = "#site-foot{max-width:920px;margin:0 auto;padding:16px;color:var(--mute,#8b95a5);font:13px system-ui,sans-serif;text-align:center}#site-foot a{color:var(--accent,#4cc3d9)}";
     document.head.appendChild(st);

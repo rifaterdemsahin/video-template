@@ -1,0 +1,35 @@
+# change.log
+
+## [1.1.0] - 2026-11-19
+### Added
+- **Bulk Setup Panel & Prompt Generator** (`panel/index.html`, `scripts/init-panel.mjs`):
+  - Full bulk-intake form with identity (`video.yaml`), video format (`short`, `long`, `course`, `podcast`), target audience (`Consumer`, `Professional`, `Business`), owner (`Rifat Erdem Sahin`), Skool CTA default, `< $2.00` generation budget cap (`$1.50` default), `fal.ai` & `DeepInfra` API key intake (`.env`), Art Director defaults (visual style, sound/VO, BGM, SFX, backgrounds, green key, lower thirds, transitions), and draft script (`plan/outline.md`).
+  - Live-updating **Role → Context → Constraints → Task** repo bootstrap prompt preview with one-click copy and `.md` download (`<slug>-initial-prompt.md`).
+- **Templated Review Website** (`index.html`, `site.css`, `nav.js`, `feedback.js`, `master-spec.html`, `script.html`, `review.html`, `kanban.html`, `publish.html`, `release-checklist.html`, `recommendations.html`, `agents.html`):
+  - Shared sticky dropdown navigation, section-by-section collapsible feedback boxes, and GitHub Issue export.
+  - Automatic placeholder replacement across all 19 template files via `scripts/fill-placeholders.mjs`.
+- **Visual Storyboard Reviewer** (`scripts/build-storyboard.mjs`):
+  - Generates `plan/storyboard.html` with scene cards, background previews, WPM pacing, and audio players; auto-built on GitHub Pages deploy (`.github/workflows/static.yml`).
+- **A/B/C Thumbnails & Series Support**:
+  - Added `thumbnails/thumb-b.html` (split-screen) and `thumbnails/thumb-c.html` (before/after) alongside `thumb-a.html`.
+  - Added `scripts/new-episode.sh <slug>` for multi-video series under `videos/<slug>/`.
+- **Style Presets & BGM Ducking** (`presets/style.json`, `presets/render.json`, `scripts/build-video.mjs`):
+  - Extracted palette, fonts, and Art Director defaults into `presets/style.json`.
+  - Added optional `bgm` track support with GSAP volume ducking during voiceover clips.
+- **CI/CD Pre-Flight Gate** (`.github/workflows/check.yml`):
+  - Automated script syntax checks, secret/media hygiene scan, end-to-end temp scaffolding test, and Hyperframes `npm run check`.
+
+### Changed
+- **Zero-`jq` & Cross-Platform Portability**:
+  - Replaced `jq` in `scripts/render.sh`, `scripts/gen-backgrounds.sh`, and `scripts/gen-voiceover.sh` with Node.js.
+  - Auto-detected Chrome/Chromium across Linux and macOS in `scripts/build-thumbnails.sh`.
+  - Installed `gsap` locally in `video/package.json` for deterministic offline renders.
+- **Automated YouTube Chapters & Pacing Linter**:
+  - `scripts/retime.mjs` now exports formatted `mm:ss` chapters to `spec/publish.json`.
+  - `scripts/validate.mjs` now checks speech rate (WPM) and overlay headline/line density.
+- **Agent Documentation** (`AGENTS.md`, `agents.md`, `README.md`, `docs/RECOMMENDATIONS.md`):
+  - Updated `AGENTS.md` (with `agents.md` symlink) with complete architecture, Hyperframes contract, and workflow lifecycle.
+
+## [1.0.0] - 2026-11-18
+### Added
+- Initial `video-template` repository with `video.yaml`, `new-video.sh`, `script/scenes.json`, `spec/project.json`, `spec/publish.json`, `prompts/`, `checklists/`, `presets/render.json`, `scripts/build-video.mjs`, `scripts/validate.mjs`, `scripts/retime.mjs`, and Hyperframes `video/` setup.
