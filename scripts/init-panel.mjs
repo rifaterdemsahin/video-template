@@ -58,6 +58,7 @@ const server = createServer((req, res) => {
           singleCallToAction: d.brief.singleCallToAction,
           tone: d.brief.tone,
           targetLengthSeconds: d.totalSecondsApprox,
+          budgetMaxUsd: d.brief.budgetMaxUsd || 1.5,
           language: d.brief.language,
           disclaimer: d.brief.disclaimer || "",
         });
@@ -68,6 +69,7 @@ const server = createServer((req, res) => {
         const stylePath = `${root}/presets/style.json`;
         const style = existsSync(stylePath) ? JSON.parse(readFileSync(stylePath, "utf8")) : { colors: {} };
         style.colors = { ...(style.colors || {}), accent: d.style.accent, warn: d.style.warn };
+        if (d.style?.artDirection) style.artDirection = { ...(style.artDirection || {}), ...d.style.artDirection };
         writeFileSync(stylePath, JSON.stringify(style, null, 2) + "\n");
 
         // 4. prompts/backgrounds.json

@@ -231,12 +231,17 @@
             <label for="disclaimer">Disclaimer (optional)</label>
             <input id="disclaimer" placeholder="Leave blank if none" />
           </div>
+          <div class="field">
+            <label for="budgetMaxUsd">Max Generation Budget (USD) * <span class="hint">(default &lt; $2.00)</span></label>
+            <input id="budgetMaxUsd" type="number" step="0.10" min="0.10" max="2.00" value="1.50" required />
+          </div>
         </div>
       </section>
 
-      <!-- 3. Style & Backgrounds -->
+      <!-- 3. Style, Art Direction & Background Plates -->
       <section>
-        <h2>3. Style &amp; Background Plates (<code>presets/style.json</code> &amp; <code>prompts/backgrounds.json</code>)</h2>
+        <h2>3. Artistic Style, Art Director Defaults &amp; Background Plates</h2>
+        <p class="hint" style="margin-bottom:12px">Pre-filled with Art Director defaults across all video production layers. Customize any layer or keep defaults.</p>
         <div class="grid">
           <div class="field">
             <label>Accent Color</label>
@@ -251,6 +256,40 @@
               <input id="warnColor" type="color" value="#ffd166" />
               <input id="warnHex" value="#ffd166" />
             </div>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:14px">
+          <div class="field">
+            <label for="art_visual">🎨 Overall Visual Style</label>
+            <input id="art_visual" value="Editorial Tech Noir — dark slate canvas, soft vignette, shallow-DOF atmospheric plates" />
+          </div>
+          <div class="field">
+            <label for="art_sound">🎙️ Sound &amp; Voiceover</label>
+            <input id="art_sound" value="British English Kokoro (bm_george), -14 LUFS target, 0.25s scene lead-in" />
+          </div>
+          <div class="field">
+            <label for="art_bgm">🎵 Music (BGM)</label>
+            <input id="art_bgm" value="Minimal ambient synth bed at 25% volume, auto-ducked to 8% under voiceover" />
+          </div>
+          <div class="field">
+            <label for="art_sfx">🔊 Sound Effects (SFX)</label>
+            <input id="art_sfx" value="Subtle whoosh on chapter tags, soft pop on bullet reveals, gentle CTA riser" />
+          </div>
+          <div class="field">
+            <label for="art_bg">🖼️ Backgrounds &amp; Motion</label>
+            <input id="art_bg" value="Text-free 16:9 plates (goal, desk, calm) with slow Ken Burns pan/zoom" />
+          </div>
+          <div class="field">
+            <label for="art_greenkey">🟩 Green Key / Presenter PiP</label>
+            <input id="art_greenkey" value="Optional chroma-key / face-cam PiP on right third (60px safe-zone padding)" />
+          </div>
+          <div class="field">
+            <label for="art_lower">🏷️ Lower Thirds &amp; Captions</label>
+            <input id="art_lower" value="Left-aligned headline (<= 6 words), accent-bordered bullets, bottom-center captions" />
+          </div>
+          <div class="field">
+            <label for="art_trans">✨ Transitions &amp; Pacing</label>
+            <input id="art_trans" value="0.4s opacity cross-fades, power3.out slide-ins, deterministic GSAP timelines" />
           </div>
         </div>
         <div class="grid" style="margin-top:14px">
@@ -377,11 +416,22 @@
           singleCallToAction: document.getElementById("cta").value.trim(),
           tone: document.getElementById("tone").value.trim() || "Clear, practical, calm",
           language: document.getElementById("language").value.trim() || "en-GB",
-          disclaimer: document.getElementById("disclaimer").value.trim()
+          disclaimer: document.getElementById("disclaimer").value.trim(),
+          budgetMaxUsd: Math.min(2, Number(document.getElementById("budgetMaxUsd").value) || 1.5)
         },
         style: {
           accent: document.getElementById("accentHex").value.trim(),
-          warn: document.getElementById("warnHex").value.trim()
+          warn: document.getElementById("warnHex").value.trim(),
+          artDirection: {
+            visualStyle: document.getElementById("art_visual").value.trim(),
+            soundVoice: document.getElementById("art_sound").value.trim(),
+            musicBgm: document.getElementById("art_bgm").value.trim(),
+            soundEffects: document.getElementById("art_sfx").value.trim(),
+            backgrounds: document.getElementById("art_bg").value.trim(),
+            greenKey: document.getElementById("art_greenkey").value.trim(),
+            lowerThirds: document.getElementById("art_lower").value.trim(),
+            transitions: document.getElementById("art_trans").value.trim()
+          }
         },
         plates: {
           goal: document.getElementById("bg_goal").value.trim(),
@@ -409,6 +459,17 @@ You are a Senior Video Production Engineer & Hyperframes Automation Agent. Your 
 - **Goal**: ${p.brief.goal || "<<TO CONFIRM>>"}
 - **Single Call to Action**: ${p.brief.singleCallToAction}
 - **Tone & Language**: ${p.brief.tone} (${p.brief.language})
+- **Max Generation Budget**: $${p.brief.budgetMaxUsd.toFixed(2)} USD (strictly under $2.00)
+
+### Art Director Defaults (Production Layers)
+- **Visual Style**: ${p.style.artDirection.visualStyle}
+- **Sound & Voiceover**: ${p.style.artDirection.soundVoice}
+- **Music (BGM)**: ${p.style.artDirection.musicBgm}
+- **Sound Effects (SFX)**: ${p.style.artDirection.soundEffects}
+- **Backgrounds**: ${p.style.artDirection.backgrounds}
+- **Green Key / PiP**: ${p.style.artDirection.greenKey}
+- **Lower Thirds & Captions**: ${p.style.artDirection.lowerThirds}
+- **Transitions & Motion**: ${p.style.artDirection.transitions}
 
 ### Initial Data Payloads to Load
 
@@ -432,6 +493,7 @@ ${JSON.stringify({
   singleCallToAction: p.brief.singleCallToAction,
   tone: p.brief.tone,
   targetLengthSeconds: p.totalSecondsApprox,
+  budgetMaxUsd: p.brief.budgetMaxUsd,
   language: p.brief.language,
   disclaimer: p.brief.disclaimer,
   format: {
@@ -442,7 +504,7 @@ ${JSON.stringify({
 
 #### 3. \`presets/style.json\` & \`prompts/backgrounds.json\`
 \`\`\`json
-${JSON.stringify({ colors: { accent: p.style.accent, warn: p.style.warn } }, null, 2)}
+${JSON.stringify({ colors: { accent: p.style.accent, warn: p.style.warn }, artDirection: p.style.artDirection }, null, 2)}
 \`\`\`
 \`\`\`json
 ${JSON.stringify({ plates: p.plates }, null, 2)}
@@ -456,6 +518,7 @@ ${p.draftScript ? `\`\`\`markdown\n${p.draftScript}\n\`\`\`` : "_No draft script
 - **Single Source of Truth**: Only edit \`video.yaml\`, \`spec/*.json\`, \`script/scenes.json\`, \`prompts/backgrounds.json\`, \`presets/style.json\`, and \`plan/outline.md\`. Never edit \`video/index.html\` or \`video/compositions/*.html\` directly.
 - **No Secrets or Media in Git**: Keep \`FAL_KEY\` in \`.env\` only; never commit \`.mp4\`, \`.mp3\`, \`.jpg\`, or \`.png\` files.
 - **Readability & Pacing**: Keep spoken \`vo\` at ~130 WPM, overlay headlines ≤ 6 words, and all text within 16:9 safe areas.
+- **Budget Cap (< $2.00)**: Keep total AI generation spend under **$${p.brief.budgetMaxUsd.toFixed(2)}** by using \`fal-ai/flux/schnell\` (4 steps), \`fal-ai/kokoro/british-english\`, and reusing the 3 background plates across scenes.
 - **No Hallucinated Facts**: Use \`<<TO CONFIRM>>\` for any missing metrics, quotes, or links.
 
 ## Task

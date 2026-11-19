@@ -8,6 +8,7 @@
   "singleCallToAction": "https://www.skool.com/delivery-pilot-8938/about?utm_source=skooldotcom&utm_medium=website&utm_campaign=discovery_search_group_link",
   "tone": "<<Three words: how it should feel>>",
   "targetLengthSeconds": 180,
+  "budgetMaxUsd": 1.5,
   "language": "en-GB",
   "disclaimer": "<<Any required disclaimer, or empty text>>",
   "format": {

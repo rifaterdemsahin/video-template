@@ -1,5 +1,5 @@
 {
-  "_about": "Visual style tokens read by scripts/build-video.mjs.",
+  "_about": "Visual style & Art Director defaults read by scripts/build-video.mjs and panel/index.html.",
   "colors": {
     "ink": "#ffffff",
     "accent": "#4cc3d9",
@@ -8,5 +8,15 @@
     "loadText": "#3a2a00"
   },
   "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-  "safeAreaPaddingPx": 60
+  "safeAreaPaddingPx": 60,
+  "artDirection": {
+    "visualStyle": "Editorial Tech Noir — dark slate canvas, soft vignette, shallow-DOF atmospheric plates",
+    "soundVoice": "British English Kokoro (bm_george), -14 LUFS target, 0.25s scene lead-in",
+    "musicBgm": "Minimal ambient synth bed at 25% volume, auto-ducked to 8% under voiceover",
+    "soundEffects": "Subtle whoosh on chapter tags, soft pop on bullet reveals, gentle CTA riser",
+    "backgrounds": "Text-free 16:9 plates (goal, desk, calm) with slow Ken Burns pan/zoom",
+    "greenKey": "Optional chroma-key / face-cam PiP on right third (60px safe-zone padding)",
+    "lowerThirds": "Left-aligned headline (<= 6 words), accent-bordered bullets, bottom-center captions",
+    "transitions": "0.4s opacity cross-fades, power3.out slide-ins, deterministic GSAP timelines"
+  }
 }
