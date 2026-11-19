@@ -260,11 +260,33 @@
         </div>
       </section>
 
-      <!-- 4. Scenes -->
+      <!-- 4. Draft Script / Outline -->
       <section>
-        <h2>4. Scenes (<code>script/scenes.json</code>)</h2>
+        <h2>4. Draft Script / Outline (<code>plan/outline.md</code>)</h2>
+        <div class="field">
+          <label for="draftScript">Rough Draft Script or Talking Points</label>
+          <span class="hint">Paste your raw script, bullet points, or narrative beats here. It will be saved to <code>plan/outline.md</code> and included in the generated repo prompt.</span>
+          <textarea id="draftScript" style="min-height:130px" placeholder="Hook: ...&#10;Main Point 1: ...&#10;Main Point 2: ...&#10;CTA: Join the community..."></textarea>
+        </div>
+      </section>
+
+      <!-- 5. Scenes -->
+      <section>
+        <h2>5. Scenes (<code>script/scenes.json</code>)</h2>
         <div id="scenesList"></div>
         <button type="button" id="addSceneBtn" class="btn btn-secondary">+ Add Scene</button>
+      </section>
+
+      <!-- 6. Live Generated Prompt -->
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+          <h2 style="margin:0">6. Generated Initial Repo Prompt (Download Ready)</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" id="copyPromptInlineBtn" class="btn btn-secondary">📋 Copy Prompt</button>
+            <button type="button" id="dlPromptInlineBtn" class="btn btn-primary">⬇️ Download Prompt (.md)</button>
+          </div>
+        </div>
+        <textarea id="promptPreview" readonly style="min-height:280px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#a5f3fc;background:#020617"></textarea>
       </section>
 
       <div class="actions">
@@ -402,6 +424,7 @@
           desk: document.getElementById("bg_desk").value.trim(),
           calm: document.getElementById("bg_calm").value.trim()
         },
+        draftScript: document.getElementById("draftScript").value.trim(),
         scenes,
         totalSecondsApprox: t
       };
@@ -463,12 +486,15 @@ Update \`prompts/backgrounds.json\` plates:
 ${JSON.stringify({ plates: p.plates }, null, 2)}
 \`\`\`
 
-## 5. Write \`script/scenes.json\`
+## 5. Save Draft Script to \`plan/outline.md\`
+${p.draftScript ? `\`\`\`markdown\n${p.draftScript}\n\`\`\`` : "_No draft script provided yet — generate outline from the brief above._"}
+
+## 6. Write \`script/scenes.json\`
 \`\`\`json
 ${JSON.stringify({ title, slug, totalSecondsApprox: p.totalSecondsApprox, scenes: p.scenes }, null, 2)}
 \`\`\`
 
-## 6. Build, Validate, Generate Assets & Deploy
+## 7. Build, Validate, Generate Assets & Deploy
 \`\`\`bash
 node scripts/retime.mjs
 node scripts/build-video.mjs
@@ -483,7 +509,15 @@ git add -A && git commit -m "feat: initialize ${slug}" && git push origin main
 `;
     };
 
-    document.getElementById("dlPromptBtn").addEventListener("click", () => {
+    const refreshPromptPreview = () => {
+      document.getElementById("promptPreview").value = buildInitialPrompt(collectPayload());
+    };
+    document.getElementById("setupForm").addEventListener("input", refreshPromptPreview);
+    document.getElementById("setupForm").addEventListener("change", refreshPromptPreview);
+    document.getElementById("addSceneBtn").addEventListener("click", () => setTimeout(refreshPromptPreview, 0));
+    refreshPromptPreview();
+
+    const downloadPromptMd = () => {
       const payload = collectPayload();
       const md = buildInitialPrompt(payload);
       const blob = new Blob([md], { type: "text/markdown" });
@@ -494,19 +528,21 @@ git add -A && git commit -m "feat: initialize ${slug}" && git push origin main
       const statusEl = document.getElementById("statusMsg");
       statusEl.className = "status ok";
       statusEl.textContent = `⬇️ Downloaded ${payload.video.slug || "video"}-initial-prompt.md`;
-    });
+    };
 
-    document.getElementById("copyPromptBtn").addEventListener("click", async () => {
+    const copyPromptMd = async () => {
       const payload = collectPayload();
       const md = buildInitialPrompt(payload);
       await navigator.clipboard.writeText(md);
-      const outEl = document.getElementById("cliOutput");
-      outEl.style.display = "block";
-      outEl.textContent = md;
       const statusEl = document.getElementById("statusMsg");
       statusEl.className = "status ok";
       statusEl.textContent = "📋 Initial repo prompt copied to clipboard!";
-    });
+    };
+
+    document.getElementById("dlPromptBtn").addEventListener("click", downloadPromptMd);
+    document.getElementById("dlPromptInlineBtn").addEventListener("click", downloadPromptMd);
+    document.getElementById("copyPromptBtn").addEventListener("click", copyPromptMd);
+    document.getElementById("copyPromptInlineBtn").addEventListener("click", copyPromptMd);
 
     document.getElementById("downloadBtn").addEventListener("click", () => {
       const payload = collectPayload();

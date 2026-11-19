@@ -75,7 +75,10 @@ const server = createServer((req, res) => {
         bg.plates = { ...(bg.plates || {}), ...(d.plates || {}) };
         writeFileSync(bgPath, JSON.stringify(bg, null, 2) + "\n");
 
-        // 5. script/scenes.json
+        // 5. script/scenes.json & plan/outline.md
+        if (d.draftScript) {
+          writeFileSync(`${root}/plan/outline.md`, `# Outline: ${d.video.title}\n\n${d.draftScript}\n`);
+        }
         const scenesDoc = {
           title: d.video.title,
           slug,
