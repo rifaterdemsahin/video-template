@@ -34,6 +34,7 @@ Needs: Node 20+, `jq`, `ffmpeg`, and Google Chrome (thumbnails). Paths in `scrip
 ## Notes
 
 - Recommendations and open ideas: [docs/RECOMMENDATIONS.md](docs/RECOMMENDATIONS.md)
+- Maturity score and a per-video scorecard: [docs/MATURITY.md](docs/MATURITY.md)
 
 - Media files are git-ignored on purpose (`*.mp4`, `*.mp3`, `*.jpg`, `*.png`, ...). Generate them or keep them outside the repo.
 - `npm run check` reports missing `assets/bg/*.jpg` and `assets/vo/*.mp3` until you generate or add them (step 6). That is expected on a fresh copy.
