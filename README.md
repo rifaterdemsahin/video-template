@@ -7,7 +7,7 @@ A template for producing a video with [Hyperframes](https://hyperframes.heygen.c
 ## Start a new video
 
 1. On GitHub, click **Use this template → Create a new repository** (or `gh repo create my-video --template rifaterdemsahin/video-template --public --clone`), then `cd` into it.
-2. Fill in `video.yaml`: `title`, `series`, `publish_date` (YYYY-MM-DD).
+2. Fill in `video.yaml`: `title`, `series`, `publish_date` (YYYY-MM-DD), **or** launch the bulk setup panel with `node scripts/init-panel.mjs` (opens at `http://localhost:4173`, or open `panel/index.html` directly).
 3. Run `./new-video.sh <slug>`, for example `./new-video.sh intro-to-n8n`. It replaces `{{VIDEO_TITLE}}`, `{{SERIES}}`, `{{PUBLISH_DATE}}` and `{{SLUG}}` everywhere, writes `video/meta.json`, copies `.env.example` to `.env` and builds the project. Run it once per copy.
 4. Plan: `plan/outline.md`, then `script/scenes.json`, then `plan/shot-list.md`. `prompts/script-from-outline.md` helps an AI assistant draft the scenes. Tick `checklists/preproduction.md`.
 5. Fill the `<<...>>` fields in `spec/project.json` and `spec/publish.json`.

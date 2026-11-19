@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Video Bulk Setup Panel</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #131c31;
+      --border: #24324d;
+      --ink: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #4cc3d9;
+      --warn: #ffd166;
+      --ok: #34d399;
+      --err: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      padding: 32px 20px 80px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { font-size: 26px; color: #fff; }
+    .sub { color: var(--muted); font-size: 14px; }
+    .mode-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--accent);
+    }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    section h2 {
+      font-size: 17px;
+      color: #fff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+    label { font-size: 13px; font-weight: 600; color: #cbd5e1; }
+    .hint { font-size: 11px; color: var(--muted); }
+    input, textarea, select {
+      width: 100%;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    textarea { min-height: 74px; resize: vertical; }
+    .scene-card {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .scene-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+    .scene-title { font-weight: 700; color: var(--accent); font-size: 14px; }
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .9; }
+    .btn-primary { background: var(--accent); color: #04222a; }
+    .btn-secondary { background: #1e293b; color: #e2e8f0; border: 1px solid var(--border); }
+    .btn-danger { background: #451a1a; color: #fecaca; padding: 6px 10px; font-size: 12px; }
+    .actions {
+      position: sticky;
+      bottom: 16px;
+      background: rgba(19, 28, 49, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.45);
+    }
+    .status { font-size: 13px; color: var(--muted); }
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--err); }
+    pre.output {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 12px;
+      overflow-x: auto;
+      margin-top: 12px;
+      display: none;
+      color: #a5f3fc;
+    }
+    .color-row { display: flex; gap: 10px; align-items: center; }
+    .color-row input[type="color"] { width: 48px; height: 38px; padding: 2px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>🎬 New Video Bulk Setup Panel</h1>
+        <p class="sub">Answer all project, brief, style, and scene questions in one place to initialize your video.</p>
+      </div>
+      <div id="modePill" class="mode-pill">Checking server...</div>
+    </header>
+
+    <form id="setupForm">
+      <!-- 1. Identity -->
+      <section>
+        <h2>1. Identity (<code>video.yaml</code>)</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="title">Video Title *</label>
+            <input id="title" required placeholder="e.g. How I Automate Video Production" />
+          </div>
+          <div class="field">
+            <label for="slug">Slug * <span class="hint">(lowercase, digits, dashes)</span></label>
+            <input id="slug" required pattern="^[a-z0-9][a-z0-9-]*$" placeholder="e.g. automate-video-production" />
+          </div>
+          <div class="field">
+            <label for="series">Series</label>
+            <input id="series" value="Standalone" placeholder="Standalone or Part 1 of 3" />
+          </div>
+          <div class="field">
+            <label for="publish_date">Publish Date *</label>
+            <input id="publish_date" type="date" required />
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Editorial Brief -->
+      <section>
+        <h2>2. Editorial Brief (<code>spec/project.json</code>)</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="owner">Owner</label>
+            <input id="owner" placeholder="Your name or channel" />
+          </div>
+          <div class="field">
+            <label for="audience">Target Audience *</label>
+            <input id="audience" required placeholder="Who is this video for?" />
+          </div>
+          <div class="field">
+            <label for="tone">Tone (3 words)</label>
+            <input id="tone" placeholder="Clear, practical, calm" />
+          </div>
+          <div class="field">
+            <label for="language">Language</label>
+            <input id="language" value="en-GB" />
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label for="goal">Goal *</label>
+          <input id="goal" required placeholder="What should the viewer understand or do afterwards?" />
+        </div>
+        <div class="grid" style="margin-top:12px">
+          <div class="field">
+            <label for="cta">Single Call to Action *</label>
+            <input id="cta" required placeholder="The one thing you ask viewers to do" />
+          </div>
+          <div class="field">
+            <label for="disclaimer">Disclaimer (optional)</label>
+            <input id="disclaimer" placeholder="Leave blank if none" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Style & Backgrounds -->
+      <section>
+        <h2>3. Style &amp; Background Plates (<code>presets/style.json</code> &amp; <code>prompts/backgrounds.json</code>)</h2>
+        <div class="grid">
+          <div class="field">
+            <label>Accent Color</label>
+            <div class="color-row">
+              <input id="accentColor" type="color" value="#4cc3d9" />
+              <input id="accentHex" value="#4cc3d9" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Highlight / Warn Color</label>
+            <div class="color-row">
+              <input id="warnColor" type="color" value="#ffd166" />
+              <input id="warnHex" value="#ffd166" />
+            </div>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:14px">
+          <div class="field">
+            <label for="bg_goal">Plate: <code>goal</code></label>
+            <textarea id="bg_goal">moody abstract background that suits the hook, cinematic, shallow depth of field</textarea>
+          </div>
+          <div class="field">
+            <label for="bg_desk">Plate: <code>desk</code></label>
+            <textarea id="bg_desk">overhead view of a tidy desk with a laptop, soft window light, muted tones, blurred</textarea>
+          </div>
+          <div class="field">
+            <label for="bg_calm">Plate: <code>calm</code></label>
+            <textarea id="bg_calm">soft dark gradient with gentle bokeh lights, minimal</textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Scenes -->
+      <section>
+        <h2>4. Scenes (<code>script/scenes.json</code>)</h2>
+        <div id="scenesList"></div>
+        <button type="button" id="addSceneBtn" class="btn btn-secondary">+ Add Scene</button>
+      </section>
+
+      <div class="actions">
+        <div id="statusMsg" class="status">Fill out the fields above and click Initialize.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" id="downloadBtn" class="btn btn-secondary">⬇️ Download JSON Bundle</button>
+          <button type="submit" id="submitBtn" class="btn btn-primary">🚀 Initialize Video</button>
+        </div>
+      </div>
+
+      <pre id="cliOutput" class="output"></pre>
+    </form>
+  </div>
+
+  <script>
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById("publish_date").value = today;
+
+    let slugEdited = false;
+    const titleEl = document.getElementById("title");
+    const slugEl = document.getElementById("slug");
+    slugEl.addEventListener("input", () => { slugEdited = true; });
+    titleEl.addEventListener("input", () => {
+      if (slugEdited) return;
+      slugEl.value = titleEl.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    });
+
+    const syncColor = (pickerId, hexId) => {
+      const p = document.getElementById(pickerId), h = document.getElementById(hexId);
+      p.addEventListener("input", () => h.value = p.value);
+      h.addEventListener("input", () => { if (/^#[0-9a-f]{6}$/i.test(h.value)) p.value = h.value; });
+    };
+    syncColor("accentColor", "accentHex");
+    syncColor("warnColor", "warnHex");
+
+    const defaultScenes = [
+      { id: "s01-hook", label: "HOOK", title: "Hook", duration: 15, bg: "goal", overlay: "Headline on screen\nOptional second line", vo: "", broll: "Opening visual or face cam", ph: "" },
+      { id: "s02-main", label: "CHAPTER 1", title: "Main point", duration: 20, bg: "desk", overlay: "Main Headline\nKey point one\nKey point two", vo: "", broll: "Screen recording or demo", ph: "Placeholder until footage is added" },
+      { id: "s03-cta", label: "CTA", title: "Call to action", duration: 10, bg: "calm", overlay: "Next Step", vo: "", broll: "End card", ph: "" }
+    ];
+
+    const scenesList = document.getElementById("scenesList");
+    const addSceneCard = (s = {}) => {
+      const idx = scenesList.children.length + 1;
+      const div = document.createElement("div");
+      div.className = "scene-card";
+      div.innerHTML = `
+        <div class="scene-head">
+          <span class="scene-title">Scene #${idx}</span>
+          <button type="button" class="btn btn-danger" onclick="this.closest('.scene-card').remove()">Remove</button>
+        </div>
+        <div class="grid">
+          <div class="field"><label>Scene ID</label><input class="sc-id" required value="${s.id || `s0${idx}-scene`}" /></div>
+          <div class="field"><label>Label Tag</label><input class="sc-label" required value="${s.label || `CHAPTER ${idx}`}" /></div>
+          <div class="field"><label>Chapter Title</label><input class="sc-title" required value="${s.title || `Scene ${idx}`}" /></div>
+          <div class="field"><label>Duration (sec)</label><input class="sc-dur" type="number" min="2" required value="${s.duration || 15}" /></div>
+          <div class="field"><label>Background Plate</label>
+            <select class="sc-bg">
+              <option value="goal" ${s.bg === "goal" ? "selected" : ""}>goal</option>
+              <option value="desk" ${s.bg === "desk" ? "selected" : ""}>desk</option>
+              <option value="calm" ${s.bg === "calm" ? "selected" : ""}>calm</option>
+            </select>
+          </div>
+          <div class="field"><label>B-Roll Description</label><input class="sc-broll" value="${s.broll || ""}" placeholder="What is on screen?" /></div>
+        </div>
+        <div class="grid" style="margin-top:10px">
+          <div class="field"><label>Voiceover Script (130 WPM)</label><textarea class="sc-vo" required placeholder="Exact spoken words for this scene...">${s.vo || ""}</textarea></div>
+          <div class="field"><label>On-Screen Overlay (1st line = headline, max 4 bullets)</label><textarea class="sc-overlay" required>${s.overlay || ""}</textarea></div>
+        </div>
+        <div class="field" style="margin-top:10px"><label>Placeholder Box (optional)</label><input class="sc-ph" value="${s.ph || ""}" placeholder="Leave blank if no placeholder frame needed" /></div>
+      `;
+      scenesList.appendChild(div);
+    };
+    defaultScenes.forEach(addSceneCard);
+    document.getElementById("addSceneBtn").addEventListener("click", () => addSceneCard());
+
+    let hasServer = false;
+    fetch("/api/health").then(r => r.ok ? r.json() : null).then(d => {
+      if (d && d.ok) {
+        hasServer = true;
+        document.getElementById("modePill").textContent = "🟢 Local Server Connected";
+      } else {
+        document.getElementById("modePill").textContent = "📄 Static Mode (Download / Copy)";
+      }
+    }).catch(() => {
+      document.getElementById("modePill").textContent = "📄 Static Mode (Download / Copy)";
+    });
+
+    const collectPayload = () => {
+      let t = 0;
+      const scenes = [...scenesList.querySelectorAll(".scene-card")].map(card => {
+        const dur = Number(card.querySelector(".sc-dur").value) || 15;
+        const overlay = card.querySelector(".sc-overlay").value.split("\n").map(x => x.trim()).filter(Boolean);
+        const phVal = card.querySelector(".sc-ph").value.trim();
+        const obj = {
+          id: card.querySelector(".sc-id").value.trim(),
+          label: card.querySelector(".sc-label").value.trim(),
+          title: card.querySelector(".sc-title").value.trim(),
+          start: t,
+          duration: dur,
+          broll: card.querySelector(".sc-broll").value.trim() || "Visual background",
+          vo: card.querySelector(".sc-vo").value.trim(),
+          realAsset: phVal ? phVal : null,
+          bg: card.querySelector(".sc-bg").value,
+          overlay: overlay.length ? overlay : ["Headline"],
+          ph: phVal || null
+        };
+        t += dur;
+        return obj;
+      });
+      return {
+        video: {
+          title: titleEl.value.trim(),
+          slug: slugEl.value.trim(),
+          series: document.getElementById("series").value.trim() || "Standalone",
+          publish_date: document.getElementById("publish_date").value
+        },
+        brief: {
+          owner: document.getElementById("owner").value.trim() || "Creator",
+          audience: document.getElementById("audience").value.trim(),
+          goal: document.getElementById("goal").value.trim(),
+          singleCallToAction: document.getElementById("cta").value.trim(),
+          tone: document.getElementById("tone").value.trim() || "Clear, practical, calm",
+          language: document.getElementById("language").value.trim() || "en-GB",
+          disclaimer: document.getElementById("disclaimer").value.trim()
+        },
+        style: {
+          accent: document.getElementById("accentHex").value.trim(),
+          warn: document.getElementById("warnHex").value.trim()
+        },
+        plates: {
+          goal: document.getElementById("bg_goal").value.trim(),
+          desk: document.getElementById("bg_desk").value.trim(),
+          calm: document.getElementById("bg_calm").value.trim()
+        },
+        scenes,
+        totalSecondsApprox: t
+      };
+    };
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const payload = collectPayload();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${payload.video.slug || "video"}-init.json`;
+      a.click();
+    });
+
+    document.getElementById("setupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const statusEl = document.getElementById("statusMsg");
+      const outEl = document.getElementById("cliOutput");
+      const payload = collectPayload();
+
+      if (!hasServer) {
+        statusEl.className = "status ok";
+        statusEl.textContent = "Static mode: save the downloaded JSON or run `node scripts/init-panel.mjs` to apply directly.";
+        outEl.style.display = "block";
+        outEl.textContent = JSON.stringify(payload, null, 2);
+        return;
+      }
+
+      statusEl.className = "status";
+      statusEl.textContent = "Initializing video project...";
+      try {
+        const res = await fetch("/api/init", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed");
+        statusEl.className = "status ok";
+        statusEl.textContent = `✅ Initialized "${payload.video.slug}"! Built video & storyboard.`;
+        outEl.style.display = "block";
+        outEl.textContent = data.log || "Done.";
+      } catch (err) {
+        statusEl.className = "status err";
+        statusEl.textContent = `❌ ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

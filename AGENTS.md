@@ -74,6 +74,11 @@ flowchart TD
 
 ### Phase 1: Initialize New Video
 ```bash
+# Option A: Interactive Bulk Setup Panel (answers all project, brief, style & scene questions at once)
+node scripts/init-panel.mjs
+# Open http://localhost:4173 (or open panel/index.html directly in a browser)
+
+# Option B: CLI Scaffolding
 # 1. Edit video.yaml with title, series, and publish_date
 # 2. Run new-video scaffolding (run once per video):
 ./new-video.sh <slug>
