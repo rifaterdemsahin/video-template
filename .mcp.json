@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "video-template-local": {
+      "command": "node",
+      "args": ["scripts/mcp-server.mjs"]
+    },
+    "video-template-fly": {
+      "type": "http",
+      "url": "https://video-template-panel.fly.dev/mcp"
+    }
+  }
+}

@@ -324,6 +324,62 @@
         </div>
       </section>
 
+      <!-- 4b. Base Artifacts Repo (Azure) -->
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+          <h2 style="margin:0">4b. Base Artifacts Repo (Azure <code>uksouth</code> / <code>dpprojects</code>)</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a href="../artifacts.html" target="_blank" rel="noopener" class="btn btn-secondary">📦 Upload &amp; Name Artifacts ↗</a>
+            <button type="button" id="syncArtifactsBtn" class="btn btn-secondary">🔄 Sync</button>
+          </div>
+        </div>
+        <span class="hint" id="artifactsHint">Upload &amp; name logos, intros, plates, and BGM on <a href="../artifacts.html" target="_blank" rel="noopener">artifacts.html</a>; they sync here automatically for your project's <code>spec/base-artifacts.json</code> &amp; bootstrap prompt.</span>
+        <div id="artifactsList" style="margin-top:10px;display:grid;gap:8px"></div>
+        <div class="grid" style="margin-top:10px;grid-template-columns:1fr 140px 2fr auto;align-items:end">
+          <div class="field">
+            <label for="manualArtName">Add Artifact Name</label>
+            <input id="manualArtName" placeholder="e.g. brand-logo.png" />
+          </div>
+          <div class="field">
+            <label for="manualArtCat">Category</label>
+            <select id="manualArtCat">
+              <option value="logos">logos</option>
+              <option value="intro-outro">intro-outro</option>
+              <option value="backgrounds">backgrounds</option>
+              <option value="fonts-style">fonts-style</option>
+              <option value="audio-bgm">audio-bgm</option>
+              <option value="b-roll">b-roll</option>
+              <option value="other">other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="manualArtUrl">Azure Blob URL (optional)</label>
+            <input id="manualArtUrl" placeholder="https://dpprojects.blob.core.windows.net/video-base-artifacts/..." />
+          </div>
+          <button type="button" id="addArtifactBtn" class="btn btn-secondary">＋ Add</button>
+        </div>
+      </section>
+
+      <!-- 4c. MCP Server & Client (Fly.io + Local) -->
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+          <h2 style="margin:0">4c. MCP Server &amp; Client (Fly.io <code>lhr</code> + Local Stdio)</h2>
+          <button type="button" id="testMcpBtn" class="btn btn-secondary">🔌 Test MCP (tools/list)</button>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="mcpBaseUrl">Fly.io / Local Server Base URL</label>
+            <input id="mcpBaseUrl" value="https://video-template-panel.fly.dev" />
+            <span class="hint">Remote MCP endpoint: <code id="mcpEndpointText">https://video-template-panel.fly.dev/mcp</code></span>
+          </div>
+          <div class="field">
+            <label>MCP Client Config (<code>.mcp.json</code>)</label>
+            <textarea id="mcpConfigPreview" readonly style="min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px"></textarea>
+          </div>
+        </div>
+        <div id="mcpTestStatus" class="hint" style="margin-top:8px">Tools: <code>list_artifacts</code>, <code>get_project_spec</code>, <code>validate_project</code>, <code>build_video</code> · CLI: <code>node scripts/mcp-client.mjs list</code></div>
+      </section>
+
       <!-- 5. Draft Script / Outline -->
       <section>
         <h2>5. Draft Script / Outline (<code>plan/outline.md</code>)</h2>
@@ -388,6 +444,7 @@
       if (d && d.ok) {
         hasServer = true;
         document.getElementById("modePill").textContent = "🟢 Local Server Connected";
+        syncFromApiArtifacts();
       } else {
         document.getElementById("modePill").textContent = "📄 Static Mode (Download / Copy)";
       }
@@ -439,6 +496,12 @@
           goal: document.getElementById("bg_goal").value.trim(),
           desk: document.getElementById("bg_desk").value.trim(),
           calm: document.getElementById("bg_calm").value.trim()
+        },
+        baseArtifacts: getSelectedArtifactsPayload(),
+        mcp: {
+          serverUrl: (document.getElementById("mcpBaseUrl")?.value.trim() || "https://video-template-panel.fly.dev").replace(/\/+$/, "") + "/mcp",
+          stdioCommand: "node scripts/mcp-server.mjs",
+          clientCli: "node scripts/mcp-client.mjs"
         },
         draftScript,
         totalSecondsApprox: estimatedSeconds
@@ -515,6 +578,14 @@ ${JSON.stringify({ plates: p.plates }, null, 2)}
 #### 4. \`plan/outline.md\` (Initial Draft Script)
 ${p.draftScript ? `\`\`\`markdown\n${p.draftScript}\n\`\`\`` : "_No draft script provided yet — generate outline from the brief above._"}
 
+#### 5. spec/base-artifacts.json (Azure Base Artifacts Repo: ${p.baseArtifacts.azure.region} / ${p.baseArtifacts.azure.storageAccount})
+${JSON.stringify(p.baseArtifacts, null, 2)}
+
+#### 6. MCP Server & Client (.mcp.json)
+- Remote HTTP MCP: ${p.mcp.serverUrl}
+- Local Stdio MCP: ${p.mcp.stdioCommand}
+- Client CLI: ${p.mcp.clientCli} list | call list_artifacts
+
 ## Constraints
 - Follow all rules in \`AGENTS.md\`.
 - **Single Source of Truth**: Only edit \`video.yaml\`, \`spec/*.json\`, \`script/scenes.json\`, \`prompts/backgrounds.json\`, \`presets/style.json\`, and \`plan/outline.md\`. Never edit \`video/index.html\` or \`video/compositions/*.html\` directly.
@@ -562,8 +633,161 @@ Execute the following steps in order to create the repository and load the initi
     };
 
     const PANEL_STORAGE_KEY = "video_template_panel_draft_v1";
+    const SHARED_ARTIFACTS_KEY = "video_template_base_artifacts_v1";
     const setupForm = document.getElementById("setupForm");
-    const isPersistable = (el) => el.id && el.id !== "promptPreview" && el.type !== "password";
+    const isPersistable = (el) => el.id && el.id !== "promptPreview" && el.type !== "password" && !el.id.startsWith("manualArt");
+
+    let sharedArtifacts = {
+      azure: {
+        region: "uksouth",
+        resourceGroup: "deliverypilot-rg",
+        storageAccount: "dpprojects",
+        container: "video-base-artifacts",
+        prefix: "shared-base",
+        baseUrl: "https://dpprojects.blob.core.windows.net/video-base-artifacts/shared-base"
+      },
+      artifacts: []
+    };
+
+    const loadSharedArtifacts = () => {
+      try {
+        const raw = JSON.parse(localStorage.getItem(SHARED_ARTIFACTS_KEY) || "null");
+        if (raw && raw.azure) {
+          sharedArtifacts = {
+            azure: raw.azure,
+            artifacts: (raw.artifacts || []).map((a) => ({ ...a, selected: a.selected !== false }))
+          };
+        }
+      } catch {}
+      renderArtifactsList();
+    };
+
+    const saveSharedArtifacts = () => {
+      try { localStorage.setItem(SHARED_ARTIFACTS_KEY, JSON.stringify(sharedArtifacts)); } catch {}
+    };
+
+    const renderArtifactsList = () => {
+      const box = document.getElementById("artifactsList");
+      if (!box) return;
+      if (!sharedArtifacts.artifacts.length) {
+        box.innerHTML = `<div class="hint">No base artifacts synced yet. Click <b>📦 Upload &amp; Name Artifacts ↗</b> above or add one manually below.</div>`;
+        return;
+      }
+      box.innerHTML = sharedArtifacts.artifacts.map((a, i) => `
+        <label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#020617;cursor:pointer">
+          <input type="checkbox" data-art-idx="${i}" ${a.selected !== false ? "checked" : ""} style="width:auto" />
+          <span style="flex:1"><b>${a.name}</b> <code style="color:var(--accent)">${a.category || "other"}</code><br><small style="color:var(--muted);word-break:break-all">${a.url || ""}</small></span>
+          <button type="button" data-art-del="${i}" class="btn btn-secondary" style="padding:3px 8px;font-size:12px">✕</button>
+        </label>
+      `).join("");
+    };
+
+    function getSelectedArtifactsPayload() {
+      return {
+        azure: sharedArtifacts.azure,
+        artifacts: sharedArtifacts.artifacts.filter((a) => a.selected !== false).map(({ selected, ...rest }) => rest)
+      };
+    }
+
+    document.getElementById("artifactsList").addEventListener("change", (e) => {
+      const cb = e.target.closest("[data-art-idx]");
+      if (!cb) return;
+      sharedArtifacts.artifacts[Number(cb.dataset.artIdx)].selected = cb.checked;
+      saveSharedArtifacts();
+      refreshPromptPreview();
+    });
+
+    document.getElementById("artifactsList").addEventListener("click", (e) => {
+      const del = e.target.closest("[data-art-del]");
+      if (!del) return;
+      e.preventDefault();
+      sharedArtifacts.artifacts.splice(Number(del.dataset.artDel), 1);
+      saveSharedArtifacts();
+      renderArtifactsList();
+      refreshPromptPreview();
+    });
+
+    async function syncFromApiArtifacts() {
+      const base = (document.getElementById("mcpBaseUrl")?.value.trim() || "").replace(/\/+$/, "");
+      const apiBase = hasServer ? "" : base;
+      if (!hasServer && !apiBase) return;
+      try {
+        const res = await fetch(`${apiBase}/api/artifacts`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.ok) return;
+        if (data.azure) sharedArtifacts.azure = { ...sharedArtifacts.azure, ...data.azure };
+        const existing = new Set(sharedArtifacts.artifacts.map((a) => a.url));
+        (data.artifacts || []).forEach((a) => {
+          if (!existing.has(a.url)) sharedArtifacts.artifacts.push({ ...a, selected: true });
+        });
+        saveSharedArtifacts();
+        renderArtifactsList();
+        refreshPromptPreview();
+      } catch {}
+    }
+
+    const updateMcpPreview = () => {
+      const base = (document.getElementById("mcpBaseUrl").value.trim() || "https://video-template-panel.fly.dev").replace(/\/+$/, "");
+      const mcpUrl = `${base}/mcp`;
+      document.getElementById("mcpEndpointText").textContent = mcpUrl;
+      document.getElementById("mcpConfigPreview").value = JSON.stringify({
+        mcpServers: {
+          "video-template-local": { command: "node", args: ["scripts/mcp-server.mjs"] },
+          "video-template-fly": { type: "http", url: mcpUrl }
+        }
+      }, null, 2);
+    };
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+      document.getElementById("mcpBaseUrl").value = location.origin;
+    }
+    document.getElementById("mcpBaseUrl").addEventListener("input", updateMcpPreview);
+    updateMcpPreview();
+
+    document.getElementById("testMcpBtn").addEventListener("click", async () => {
+      const base = (document.getElementById("mcpBaseUrl").value.trim() || "").replace(/\/+$/, "");
+      const st = document.getElementById("mcpTestStatus");
+      st.textContent = `Connecting to ${base}/mcp...`;
+      try {
+        const res = await fetch(`${base}/mcp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} })
+        });
+        const data = await res.json();
+        const names = (data.result?.tools || []).map((t) => t.name).join(", ");
+        st.innerHTML = `<span style="color:var(--ok)">✓ Connected</span> · Tools: <code>${names}</code>`;
+      } catch (err) {
+        st.innerHTML = `<span style="color:var(--warn)">⚠️ ${err.message}</span> (deploy to Fly.io with <code>fly deploy</code> or run <code>node scripts/init-panel.mjs</code> locally)`;
+      }
+    });
+
+    document.getElementById("syncArtifactsBtn").addEventListener("click", async () => {
+      loadSharedArtifacts();
+      await syncFromApiArtifacts();
+      refreshPromptPreview();
+    });
+
+    document.getElementById("addArtifactBtn").addEventListener("click", () => {
+      const name = document.getElementById("manualArtName").value.trim();
+      if (!name) return;
+      const category = document.getElementById("manualArtCat").value;
+      const prefix = slugEl.value.trim() || sharedArtifacts.azure.prefix || "shared-base";
+      const url = document.getElementById("manualArtUrl").value.trim() ||
+        `https://${sharedArtifacts.azure.storageAccount}.blob.core.windows.net/${sharedArtifacts.azure.container}/${prefix}/${category}/${name}`;
+      sharedArtifacts.artifacts.push({ name, category, url, selected: true, addedAt: new Date().toISOString() });
+      document.getElementById("manualArtName").value = "";
+      document.getElementById("manualArtUrl").value = "";
+      saveSharedArtifacts();
+      renderArtifactsList();
+      refreshPromptPreview();
+    });
+
+    window.addEventListener("storage", (e) => {
+      if (e.key === SHARED_ARTIFACTS_KEY) { loadSharedArtifacts(); refreshPromptPreview(); }
+    });
+
+    loadSharedArtifacts();
 
     const restorePanelDraft = () => {
       try {

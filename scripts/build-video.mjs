@@ -14,6 +14,8 @@ const S = JSON.parse(readFileSync(`${root}/script/scenes.json`, "utf8"));
 const readJsonSafe = (p, fallback) => { try { return JSON.parse(readFileSync(`${root}/${p}`, "utf8")); } catch { return fallback; } };
 const style = readJsonSafe("presets/style.json", {});
 const renderCfg = readJsonSafe("presets/render.json", {});
+const layoutsDoc = readJsonSafe("presets/layouts.json", { layouts: [] });
+const enabledLayouts = new Set((layoutsDoc.layouts || []).filter((l) => l.enabled).map((l) => l.id));
 const colors = {
   ink: "#ffffff",
   accent: "#4cc3d9",
@@ -69,7 +71,25 @@ const CSS = `
     .fulcrum { position: absolute; left: 470px; top: 342px; width: 0; height: 0; border-left: 50px solid transparent; border-right: 50px solid transparent; border-bottom: 100px solid var(--accent); }
     .effort { position: absolute; left: 45px; top: 250px; width: 110px; height: 80px; background: var(--accent); color: ${colors.tagText}; font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
     .load { position: absolute; left: 655px; top: 180px; width: 190px; height: 150px; background: var(--warn); color: ${colors.loadText}; font-weight: 800; font-size: 28px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
-    .fxcap { position: absolute; left: 0; top: 460px; width: 860px; text-align: center; font-size: 32px; font-weight: 700; color: #fff; }`;
+    .fxcap { position: absolute; left: 0; top: 460px; width: 860px; text-align: center; font-size: 32px; font-weight: 700; color: #fff; }
+    .layout-split-left-media .stack { left: 920px; width: 880px; }
+    .layout-split-left-media .ph, .layout-split-left-media .footage { right: auto; left: 80px; }
+    .layout-centered-statement .tag { left: 50%; transform: translateX(-50%); }
+    .layout-centered-statement .stack { left: 260px; top: 260px; width: 1400px; text-align: center; align-items: center; }
+    .layout-centered-statement .line { border-left: 0; border-bottom: 4px solid var(--accent); }
+    .layout-bullets-focus .stack { top: 170px; width: 1320px; gap: 12px; }
+    .layout-bullets-focus h1 { font-size: 66px; }
+    .layout-bullets-focus .line { font-size: 34px; padding: 10px 22px; }
+    .layout-comparison-two-col .stack { left: 100px; top: 150px; width: 1720px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .layout-comparison-two-col h1 { grid-column: 1 / -1; font-size: 64px; }
+    .layout-lower-third-pip .footage, .layout-lower-third-pip .ph { left: 60px; right: 60px; top: 60px; width: 1800px; height: 820px; }
+    .layout-lower-third-pip .stack { left: 80px; top: auto; bottom: 200px; width: 1040px; background: rgba(0,0,0,.72); padding: 18px 24px; border-radius: 12px; }
+    .layout-lower-third-pip h1 { font-size: 48px; }
+    .layout-lower-third-pip .line { font-size: 28px; padding: 8px 14px; }
+    .layout-quote-spotlight .stack { left: 180px; top: 250px; width: 1560px; }
+    .layout-quote-spotlight h1 { font-size: 74px; border-left: 8px solid var(--accent); padding-left: 32px; }
+    .layout-cta-endcard .stack { left: 120px; top: 260px; width: 1300px; }
+    .layout-cta-endcard .line { border-left-color: var(--warn); }`;
 
 const hasLocalGsap = existsSync(`${root}/video/node_modules/gsap/dist/gsap.min.js`);
 const GSAP_SCENE = hasLocalGsap
@@ -96,6 +116,8 @@ scenes.forEach((s, i) => {
   const dense = lines.length >= 5;
   const wide = s.phSize === "large";
   const logoFile = s.logo ? ["svg", "png", "webp", "jpg"].map((e) => `assets/logos/${s.logo}.${e}`).find((f) => existsSync(`${root}/video/${f}`)) : null;
+  const layoutId = s.layout && (!enabledLayouts.size || enabledLayouts.has(s.layout)) ? s.layout : "";
+  const layoutClass = layoutId ? ` layout-${esc(layoutId)}` : "";
   const voDur = s.voSeconds || s.duration - 0.5;
   const voLocal = VO_LEAD; // local time inside the scene
 
@@ -180,7 +202,7 @@ ${i === scenes.length - 1 ? "" : `tl.to("#scene", { opacity: 0, duration: 0.4, e
 </head>
 <body>
   <div data-composition-id="${s.id}" data-width="1920" data-height="1080">
-    <div id="scene" class="scene">
+    <div id="scene" class="scene${layoutClass}">
       <div id="bg" class="bg" data-layout-ignore style="background-image:url(../assets/bg/${esc(s.bg || "calm")}.jpg)"></div>
       <div class="shade" data-layout-ignore></div>
       <div id="prog" class="prog"></div>

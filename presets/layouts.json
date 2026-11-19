@@ -1,0 +1,588 @@
+{
+  "_about": "Video production scene layouts (1920x1080, 60px safe-zone padding). Served by scripts/init-panel.mjs (/api/layouts) and consumed by layouts.html and scripts/build-video.mjs.",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "safeAreaPaddingPx": 60
+  },
+  "layouts": [
+    {
+      "id": "full-bleed-title",
+      "name": "Full-Bleed Title & Bullets",
+      "category": "Hook / Intro",
+      "description": "Wide left-aligned headline and accent-bordered bullet cards over an atmospheric background plate with bottom-center captions.",
+      "enabled": true,
+      "recommendedFor": [
+        "hook",
+        "intro",
+        "statement"
+      ],
+      "aspectSupport": [
+        "16:9"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 80,
+          "y": 56,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "headline",
+          "label": "Headline",
+          "x": 120,
+          "y": 210,
+          "w": 1200,
+          "h": 180,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Bullet Stack",
+          "x": 120,
+          "y": 410,
+          "w": 1200,
+          "h": 340,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "split-right-media",
+      "name": "Split Left Text + Right Media",
+      "category": "Demo / Footage",
+      "description": "Narrow left text column paired with a 16:9 B-roll, screen recording, or footage placeholder frame on the right.",
+      "enabled": true,
+      "recommendedFor": [
+        "demo",
+        "broll",
+        "walkthrough"
+      ],
+      "aspectSupport": [
+        "16:9"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 80,
+          "y": 56,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "headline",
+          "label": "Headline",
+          "x": 120,
+          "y": 210,
+          "w": 820,
+          "h": 160,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Bullet Stack",
+          "x": 120,
+          "y": 390,
+          "w": 820,
+          "h": 360,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "media",
+          "label": "Media / Footage",
+          "x": 1040,
+          "y": 230,
+          "w": 780,
+          "h": 440,
+          "color": "#ffd166"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "split-left-media",
+      "name": "Split Left Media + Right Text",
+      "category": "Demo / Footage",
+      "description": "Alternating split layout with 16:9 media on the left and headline plus key points on the right to vary visual pacing.",
+      "enabled": true,
+      "recommendedFor": [
+        "demo",
+        "broll",
+        "alternating"
+      ],
+      "aspectSupport": [
+        "16:9"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 80,
+          "y": 56,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "media",
+          "label": "Media / Footage",
+          "x": 80,
+          "y": 230,
+          "w": 780,
+          "h": 440,
+          "color": "#ffd166"
+        },
+        {
+          "role": "headline",
+          "label": "Headline",
+          "x": 920,
+          "y": 210,
+          "w": 880,
+          "h": 160,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Bullet Stack",
+          "x": 920,
+          "y": 390,
+          "w": 880,
+          "h": 360,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "centered-statement",
+      "name": "Centered Hero Statement",
+      "category": "Hook / Intro",
+      "description": "High-impact centered headline and concise subtitle for opening hooks, chapter resets, or thesis statements.",
+      "enabled": true,
+      "recommendedFor": [
+        "hook",
+        "thesis",
+        "transition"
+      ],
+      "aspectSupport": [
+        "16:9",
+        "9:16"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 840,
+          "y": 72,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "headline",
+          "label": "Centered Headline",
+          "x": 260,
+          "y": 280,
+          "w": 1400,
+          "h": 200,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Sub-lines",
+          "x": 360,
+          "y": 510,
+          "w": 1200,
+          "h": 240,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "bullets-focus",
+      "name": "Dense Key Takeaways",
+      "category": "Explain / Main",
+      "description": "Compact headline and tighter vertical spacing supporting 4-6 structured bullet points for step-by-step explanations.",
+      "enabled": true,
+      "recommendedFor": [
+        "steps",
+        "checklist",
+        "architecture"
+      ],
+      "aspectSupport": [
+        "16:9"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 80,
+          "y": 56,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "headline",
+          "label": "Compact Headline",
+          "x": 120,
+          "y": 170,
+          "w": 1320,
+          "h": 120,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Dense Bullet List",
+          "x": 120,
+          "y": 310,
+          "w": 1320,
+          "h": 500,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "comparison-two-col",
+      "name": "Two-Column Comparison",
+      "category": "Comparison",
+      "description": "Balanced side-by-side layout for Before vs. After, Option A vs. Option B, or problem vs. solution breakdowns.",
+      "enabled": false,
+      "recommendedFor": [
+        "comparison",
+        "tradeoffs",
+        "before-after"
+      ],
+      "aspectSupport": [
+        "16:9"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 80,
+          "y": 56,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "headline",
+          "label": "Comparison Title",
+          "x": 100,
+          "y": 150,
+          "w": 1720,
+          "h": 110,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Column A",
+          "x": 100,
+          "y": 290,
+          "w": 820,
+          "h": 520,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "media",
+          "label": "Column B",
+          "x": 1000,
+          "y": 290,
+          "w": 820,
+          "h": 520,
+          "color": "#ffd166"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "lower-third-pip",
+      "name": "Full Footage + Lower-Third & PiP",
+      "category": "Demo / Footage",
+      "description": "Full-bleed screen capture or demo footage with a compact lower-third title card and optional right-third face-cam PiP.",
+      "enabled": false,
+      "recommendedFor": [
+        "screencast",
+        "live-demo",
+        "facecam"
+      ],
+      "aspectSupport": [
+        "16:9"
+      ],
+      "zones": [
+        {
+          "role": "media",
+          "label": "Full-Bleed Demo",
+          "x": 60,
+          "y": 60,
+          "w": 1800,
+          "h": 820,
+          "color": "#ffd166"
+        },
+        {
+          "role": "logo",
+          "label": "PiP / Face-Cam",
+          "x": 1420,
+          "y": 100,
+          "w": 400,
+          "h": 260,
+          "color": "#68d391"
+        },
+        {
+          "role": "headline",
+          "label": "Lower-Third Card",
+          "x": 80,
+          "y": 720,
+          "w": 1040,
+          "h": 150,
+          "color": "#ffffff"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "quote-spotlight",
+      "name": "Quote / Metric Spotlight",
+      "category": "Explain / Main",
+      "description": "Editorial spotlight layout for a single memorable quote, benchmark number, or key takeaway with attribution.",
+      "enabled": false,
+      "recommendedFor": [
+        "quote",
+        "stat",
+        "proof"
+      ],
+      "aspectSupport": [
+        "16:9",
+        "9:16"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 80,
+          "y": 56,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "headline",
+          "label": "Spotlight Quote / Stat",
+          "x": 180,
+          "y": 260,
+          "w": 1560,
+          "h": 300,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Attribution / Context",
+          "x": 180,
+          "y": 590,
+          "w": 1100,
+          "h": 160,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "leverage-diagram",
+      "name": "Animated Leverage Diagram",
+      "category": "Explain / Main",
+      "description": "Left text stack paired with the deterministic GSAP lever/fulcrum/load visual diagram on the right.",
+      "enabled": true,
+      "recommendedFor": [
+        "metaphor",
+        "leverage",
+        "system"
+      ],
+      "aspectSupport": [
+        "16:9"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "Chapter Tag",
+          "x": 80,
+          "y": 56,
+          "w": 240,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "headline",
+          "label": "Headline",
+          "x": 120,
+          "y": 210,
+          "w": 820,
+          "h": 160,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Bullet Stack",
+          "x": 120,
+          "y": 390,
+          "w": 820,
+          "h": 340,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "media",
+          "label": "GSAP Lever FX",
+          "x": 990,
+          "y": 240,
+          "w": 860,
+          "h": 520,
+          "color": "#68d391"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    },
+    {
+      "id": "cta-endcard",
+      "name": "CTA End Card",
+      "category": "CTA / Outro",
+      "description": "Closing scene layout with prominent single call-to-action, optional brand logo badge, and held final frame.",
+      "enabled": true,
+      "recommendedFor": [
+        "cta",
+        "outro",
+        "endcard"
+      ],
+      "aspectSupport": [
+        "16:9",
+        "9:16"
+      ],
+      "zones": [
+        {
+          "role": "tag",
+          "label": "CTA Tag",
+          "x": 80,
+          "y": 56,
+          "w": 200,
+          "h": 54,
+          "color": "#4cc3d9"
+        },
+        {
+          "role": "logo",
+          "label": "Brand Logo",
+          "x": 1600,
+          "y": 100,
+          "w": 240,
+          "h": 120,
+          "color": "#68d391"
+        },
+        {
+          "role": "headline",
+          "label": "Call To Action",
+          "x": 120,
+          "y": 260,
+          "w": 1300,
+          "h": 200,
+          "color": "#ffffff"
+        },
+        {
+          "role": "bullets",
+          "label": "Next Step / Link",
+          "x": 120,
+          "y": 490,
+          "w": 1000,
+          "h": 180,
+          "color": "#ffd166"
+        },
+        {
+          "role": "captions",
+          "label": "Captions",
+          "x": 180,
+          "y": 916,
+          "w": 1560,
+          "h": 90,
+          "color": "#8b95a5"
+        }
+      ]
+    }
+  ]
+}

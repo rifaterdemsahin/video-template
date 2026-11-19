@@ -1,0 +1,11 @@
+.git
+.env
+node_modules
+video/node_modules
+video/assets
+video/renders
+*.mp4
+*.mp3
+*.wav
+*.jpg
+*.png

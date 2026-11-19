@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, cpSync, rmSync, mkdtempSync } from "node:fs";
-import { execFileSync, execSync } from "node:child_process";
+import { execFileSync, execSync, spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -28,12 +28,20 @@ test("all core JSON configs parse and contain required schema fields", () => {
   readJson("presets/render.json");
   readJson("prompts/backgrounds.json");
   readJson("video/package.json");
+
+  const layoutsDoc = readJson("presets/layouts.json");
+  assert.ok(Array.isArray(layoutsDoc.layouts) && layoutsDoc.layouts.length >= 5, "presets/layouts.json must define layouts");
+  for (const l of layoutsDoc.layouts) {
+    assert.ok(l.id && l.name && l.category, `Layout missing id/name/category: ${JSON.stringify(l)}`);
+    assert.equal(typeof l.enabled, "boolean", `Layout ${l.id} must have boolean enabled`);
+    assert.ok(Array.isArray(l.zones) && l.zones.length > 0, `Layout ${l.id} must define zones`);
+  }
 });
 
 test("all website pages, thumbnails, and shared assets exist and wire nav.js", () => {
   const rootPages = [
-    "index.html", "master-spec.html", "script.html", "review.html", "maturity.html",
-    "kanban.html", "publish.html", "release-checklist.html", "recommendations.html", "agents.html"
+    "index.html", "master-spec.html", "script.html", "layouts.html", "review.html", "maturity.html",
+    "kanban.html", "publish.html", "release-checklist.html", "recommendations.html", "agents.html", "artifacts.html"
   ];
   for (const p of rootPages) {
     const html = read(p);
@@ -103,5 +111,50 @@ test("end-to-end scaffolding, retime, build-video, build-storyboard, and validat
     assert.ok(filledNav.includes("Eval Test Video") && !filledNav.includes("{{VIDEO_TITLE}}"), "nav.js placeholders must be replaced");
   } finally {
     rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test("layouts API serves layouts and persists enabled selection", async () => {
+  const port = 4199;
+  const orig = readJson("presets/layouts.json");
+  const origEnabledIds = orig.layouts.filter((l) => l.enabled).map((l) => l.id);
+  const proc = spawn("node", ["scripts/init-panel.mjs", String(port)], { cwd: root, stdio: ["ignore", "pipe", "pipe"] });
+  try {
+    await new Promise((res, rej) => {
+      const timer = setTimeout(() => rej(new Error("init-panel server timeout")), 5000);
+      proc.stdout.on("data", (d) => { if (String(d).includes(String(port))) { clearTimeout(timer); res(); } });
+      proc.stderr.on("data", (d) => { clearTimeout(timer); rej(new Error(String(d))); });
+    });
+
+    const allRes = await fetch(`http://127.0.0.1:${port}/api/layouts`);
+    assert.equal(allRes.status, 200);
+    const allData = await allRes.json();
+    assert.equal(allData.ok, true);
+    assert.ok(allData.total >= 5);
+
+    const singleRes = await fetch(`http://127.0.0.1:${port}/api/layouts/full-bleed-title`);
+    assert.equal(singleRes.status, 200);
+    const singleData = await singleRes.json();
+    assert.equal(singleData.layout.id, "full-bleed-title");
+
+    const postRes = await fetch(`http://127.0.0.1:${port}/api/layouts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabledIds: ["full-bleed-title", "comparison-two-col"] })
+    });
+    assert.equal(postRes.status, 200);
+    const postData = await postRes.json();
+    assert.deepEqual(postData.enabledIds, ["full-bleed-title", "comparison-two-col"]);
+
+    const enRes = await fetch(`http://127.0.0.1:${port}/api/layouts?enabled=true`);
+    const enData = await enRes.json();
+    assert.equal(enData.layouts.length, 2);
+  } finally {
+    await fetch(`http://127.0.0.1:${port}/api/layouts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabledIds: origEnabledIds })
+    }).catch(() => {});
+    proc.kill();
   }
 });

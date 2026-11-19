@@ -7,12 +7,14 @@
 
   var MENU = [
     { label: "🏠 Home", href: "" },
+    { label: "📦 Artifacts", href: "artifacts.html" },
     {
       label: "📋 1 Plan",
       items: [
         ["🚀 Bulk Setup Panel", "panel/index.html"],
         ["📘 Master Spec", "master-spec.html"],
         ["📜 Script & Scenes", "script.html"],
+        ["🎨 Scene Layouts", "layouts.html"],
         ["🎞️ Storyboard", "plan/storyboard.html"],
         ["💡 Recommendations", "recommendations.html"]
       ]
@@ -38,6 +40,7 @@
     {
       label: "⚙️ 4 Project",
       items: [
+        ["📦 Base Artifacts (Azure)", "artifacts.html"],
         ["🤖 AGENTS.md", "agents.html"],
         ["🐙 GitHub Repo ↗", G],
         ["🤖 CI Actions ↗", G + "/actions"]
@@ -63,7 +66,14 @@
     "#site-nav .dd.open .menu{display:block}" +
     "@media(hover:hover){#site-nav .dd:hover .menu{display:block}}" +
     "#site-nav .menu a{display:block}" +
-    "@media(max-width:600px){#site-nav .menu{position:static;box-shadow:none;min-width:0}}";
+    "#site-nav .nav-search{position:relative;margin-left:auto}" +
+    "#site-nav .nav-search input{background:#171b22;color:#e8ecf1;border:1px solid #232a35;border-radius:6px;padding:5px 10px;font:13px system-ui,sans-serif;width:190px;outline:none}" +
+    "#site-nav .nav-search input:focus{border-color:#4cc3d9;width:230px}" +
+    "#site-nav .nav-search-res{display:none;position:absolute;top:100%;right:0;min-width:270px;max-height:320px;overflow-y:auto;padding:4px;background:#171b22;border:1px solid #232a35;border-radius:8px;box-shadow:0 8px 24px #0008;z-index:1002;margin-top:4px}" +
+    "#site-nav .nav-search-res.open{display:block}" +
+    "#site-nav .nav-search-res a{display:block;padding:6px 10px;border-radius:6px;color:#e8ecf1;font-size:13px}" +
+    "#site-nav .nav-search-res a small{display:block;color:#8b95a5;font-size:11px}" +
+    "@media(max-width:600px){#site-nav .menu{position:static;box-shadow:none;min-width:0}#site-nav .nav-search{margin-left:0;width:100%}#site-nav .nav-search input{width:100%}}";
   document.head.appendChild(css);
 
   var nav = document.createElement("nav");
@@ -83,8 +93,55 @@
     });
     html += "</div></div>";
   });
+  html += '<div class="nav-search"><input id="navSearchInput" type="search" placeholder="Search pages & artifacts..." aria-label="Search pages and artifacts" autocomplete="off" /><div id="navSearchRes" class="nav-search-res"></div></div>';
   nav.innerHTML = html;
   document.body.insertBefore(nav, document.body.firstChild);
+
+  var KEYWORDS = {
+    "artifacts.html": "azure blob upload repo base logos intro outro background audio uksouth dpprojects",
+    "panel/index.html": "setup bulk init prompt fal deepinfra",
+    "master-spec.html": "brief audience goal cta rules",
+    "script.html": "scenes voiceover vo overlay broll",
+    "layouts.html": "layout grid split media lower third pip safe zone api",
+    "plan/storyboard.html": "visual cards frames",
+    "publish.html": "youtube title description chapters thumbnails"
+  };
+  var searchPages = [];
+  MENU.forEach(function (m) {
+    if (m.items) m.items.forEach(function (it) { searchPages.push({ label: it[0], href: it[1], kw: KEYWORDS[it[1]] || "" }); });
+    else searchPages.push({ label: m.label, href: m.href, kw: KEYWORDS[m.href] || "" });
+  });
+
+  var sInput = nav.querySelector("#navSearchInput");
+  var sRes = nav.querySelector("#navSearchRes");
+  var renderSearch = function () {
+    var q = sInput.value.trim().toLowerCase();
+    if (!q) { sRes.classList.remove("open"); sRes.innerHTML = ""; return; }
+    var hits = searchPages.filter(function (p) {
+      return (p.label + " " + p.href + " " + p.kw).toLowerCase().indexOf(q) !== -1;
+    }).map(function (p) {
+      var ext = /^https?:/.test(p.href) ? ' target="_blank" rel="noopener"' : "";
+      return '<a href="' + url(p.href) + '"' + ext + '>' + p.label + '<small>' + (p.href || "index.html") + '</small></a>';
+    });
+    try {
+      var shared = JSON.parse(localStorage.getItem("video_template_base_artifacts_v1") || "{}");
+      (shared.artifacts || []).forEach(function (a) {
+        if (((a.name || "") + " " + (a.category || "")).toLowerCase().indexOf(q) !== -1) {
+          hits.push('<a href="' + url("artifacts.html") + '">📦 ' + a.name + '<small>Artifact · ' + (a.category || "other") + '</small></a>');
+        }
+      });
+    } catch (e) {}
+    sRes.innerHTML = hits.length ? hits.slice(0, 10).join("") : '<span style="display:block;padding:6px 10px;color:#8b95a5;font-size:13px">No matches</span>';
+    sRes.classList.add("open");
+  };
+  sInput.addEventListener("input", renderSearch);
+  sInput.addEventListener("focus", renderSearch);
+  sInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      var first = sRes.querySelector("a");
+      if (first) { e.preventDefault(); first.click(); }
+    }
+  });
 
   var closeAll = function () {
     nav.querySelectorAll(".dd.open").forEach(function (d) {
@@ -99,8 +156,8 @@
     closeAll();
     if (!was) { dd.classList.add("open"); b.setAttribute("aria-expanded", "true"); }
   });
-  document.addEventListener("click", function (e) { if (!nav.contains(e.target)) closeAll(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAll(); });
+  document.addEventListener("click", function (e) { if (!nav.contains(e.target)) { closeAll(); sRes.classList.remove("open"); } });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeAll(); sRes.classList.remove("open"); } });
 
   var rel = location.href.split("#")[0].split("?")[0];
   rel = rel.indexOf(base) === 0 ? rel.slice(base.length) : rel;

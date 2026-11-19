@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scene Layouts · {{VIDEO_TITLE}}</title>
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin:18px 0 12px; }
+    .pills { display:flex; flex-wrap:wrap; gap:6px; }
+    .pill { background:var(--card); color:var(--mute); border:1px solid var(--line); border-radius:999px; padding:5px 12px; font:600 13px system-ui,sans-serif; cursor:pointer; }
+    .pill:hover { border-color:var(--accent); color:var(--ink); }
+    .pill.on { background:var(--accent); color:#04222a; border-color:var(--accent); }
+    .actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .btn { background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 13px; font:600 13px system-ui,sans-serif; cursor:pointer; }
+    .btn:hover { border-color:var(--accent); }
+    .btn.primary { background:var(--accent); color:#04222a; border-color:var(--accent); }
+    .layout-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr)); margin-top:14px; }
+    .lcard { background:var(--card); border:2px solid var(--line); border-radius:14px; padding:14px; transition:border-color .15s, opacity .15s; display:flex; flex-direction:column; gap:10px; }
+    .lcard.enabled { border-color:var(--accent); }
+    .lcard.disabled { opacity:.72; }
+    .lcard-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .lcard-title { margin:0; font-size:17px; }
+    .switch { display:inline-flex; align-items:center; gap:7px; cursor:pointer; font:600 13px system-ui,sans-serif; user-select:none; }
+    .switch input { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; }
+    .preview-box { position:relative; width:100%; aspect-ratio:16 / 9; background:#0b0f14; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    .preview-safe { position:absolute; left:3.125%; top:5.55%; right:3.125%; bottom:5.55%; border:1px dashed rgba(255,255,255,.18); pointer-events:none; }
+    .zbox { position:absolute; border-radius:4px; border:1px solid; display:flex; align-items:center; justify-content:center; font:700 10px/1.1 system-ui,sans-serif; text-align:center; padding:2px 4px; overflow:hidden; }
+    .meta-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .lcard-foot { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:auto; padding-top:4px; border-top:1px solid var(--line); }
+    .status-bar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin:14px 0; font-size:14px; }
+    dialog.inspect { max-width:680px; width:92vw; background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:14px; padding:18px; }
+    dialog.inspect::backdrop { background:rgba(0,0,0,.65); }
+  </style>
+</head>
+<body>
+  <script src="nav.js"></script>
+  <main>
+    <p class="crumbs">📋 1 Plan → Scene Layouts</p>
+    <h1>🎨 Video Production Layouts</h1>
+    <p class="lead">Define and select which 1920×1080 safe-area scene layouts are enabled for production. Served live via <code>GET /api/layouts</code> and persisted to <code>presets/layouts.json</code>.</p>
+
+    <div class="status-bar">
+      <div>
+        <span id="apiBadge" class="badge warn">Checking API…</span>
+        <strong id="countSummary" style="margin-left:8px">Loading layouts…</strong>
+      </div>
+      <div id="saveMsg" style="color:var(--mute);font-size:13px"></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="pills" id="filterPills" role="group" aria-label="Filter layouts"></div>
+      <div class="actions">
+        <button class="btn" id="selectAllBtn" type="button">Enable All</button>
+        <button class="btn" id="selectNoneBtn" type="button">Disable All</button>
+        <button class="btn primary" id="saveBtn" type="button">Save Selection</button>
+        <button class="btn" id="downloadBtn" type="button">Download JSON</button>
+      </div>
+    </div>
+
+    <div class="layout-grid" id="layoutGrid">
+      <p class="card">Loading <code>presets/layouts.json</code>…</p>
+    </div>
+
+    <h2>🔌 Layout API Endpoints</h2>
+    <div class="card">
+      <p>Start the local API server with <code>node scripts/init-panel.mjs</code> (default port <code>4173</code>):</p>
+      <pre>GET  /api/layouts                 # List all layouts + enabledIds
+GET  /api/layouts?enabled=true    # List only selected/enabled layouts
+GET  /api/layouts/:id             # Fetch a single layout definition
+POST /api/layouts                 # Update selection: {"enabledIds":["full-bleed-title","split-right-media"]}</pre>
+    </div>
+
+    <div class="next">
+      <a href="script.html">← Script &amp; Scenes</a>
+      <a href="plan/storyboard.html">Next: Storyboard →</a>
+    </div>
+  </main>
+
+  <dialog id="inspectModal" class="inspect">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px">
+      <h2 id="modalTitle" style="margin:0">Layout Details</h2>
+      <button class="btn" id="closeModalBtn" type="button">Close</button>
+    </div>
+    <p id="modalDesc" style="color:var(--mute);margin-top:0"></p>
+    <h3>Scene JSON Usage (<code>script/scenes.json</code>)</h3>
+    <pre id="modalSnippet"></pre>
+    <h3>Safe-Area Zone Coordinates (1920×1080)</h3>
+    <pre id="modalZones"></pre>
+  </dialog>
+
+  <script>
+    const STORAGE_KEY = "video_template_enabled_layouts_v1";
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+    let docCanvas = { width: 1920, height: 1080, safeAreaPaddingPx: 60 };
+    let layouts = [];
+    let activeFilter = "all";
+    let apiBase = null;
+
+    const apiBadge = document.getElementById("apiBadge");
+    const countSummary = document.getElementById("countSummary");
+    const saveMsg = document.getElementById("saveMsg");
+    const filterPills = document.getElementById("filterPills");
+    const layoutGrid = document.getElementById("layoutGrid");
+    const modal = document.getElementById("inspectModal");
+
+    async function detectApiAndLoad() {
+      const candidates = ["", "http://localhost:4173"];
+      for (const base of candidates) {
+        try {
+          const r = await fetch(`${base}/api/layouts`, { cache: "no-store" });
+          if (r.ok) {
+            const data = await r.json();
+            if (Array.isArray(data.layouts)) {
+              apiBase = base;
+              docCanvas = data.canvas || docCanvas;
+              layouts = data.layouts;
+              apiBadge.textContent = "API Connected";
+              apiBadge.className = "badge ok";
+              renderAll();
+              return;
+            }
+          }
+        } catch {}
+      }
+
+      // Fallback to static presets/layouts.json + localStorage overrides
+      apiBadge.textContent = "Static Mode (localStorage)";
+      apiBadge.className = "badge warn";
+      try {
+        const r = await fetch("presets/layouts.json", { cache: "no-store" });
+        const data = await r.json();
+        docCanvas = data.canvas || docCanvas;
+        layouts = data.layouts || [];
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (Array.isArray(saved)) {
+          const wanted = new Set(saved);
+          layouts.forEach((l) => { l.enabled = wanted.has(l.id); });
+        }
+        renderAll();
+      } catch {
+        layoutGrid.innerHTML = `<p class="note">Could not load <code>presets/layouts.json</code>. Start the API server with <code>node scripts/init-panel.mjs</code>.</p>`;
+      }
+    }
+
+    function renderFilters() {
+      const categories = Array.from(new Set(layouts.map((l) => l.category)));
+      const pills = [
+        { id: "all", label: `All (${layouts.length})` },
+        { id: "enabled", label: `Enabled (${layouts.filter((l) => l.enabled).length})` },
+        ...categories.map((c) => ({ id: `cat:${c}`, label: c }))
+      ];
+      filterPills.innerHTML = pills.map((p) =>
+        `<button type="button" class="pill${activeFilter === p.id ? " on" : ""}" data-filter="${esc(p.id)}">${esc(p.label)}</button>`
+      ).join("");
+    }
+
+    function renderPreview(layout) {
+      const W = docCanvas.width || 1920;
+      const H = docCanvas.height || 1080;
+      const zonesHtml = (layout.zones || []).map((z) => {
+        const left = ((z.x / W) * 100).toFixed(2);
+        const top = ((z.y / H) * 100).toFixed(2);
+        const width = ((z.w / W) * 100).toFixed(2);
+        const height = ((z.h / H) * 100).toFixed(2);
+        const c = z.color || "#4cc3d9";
+        return `<div class="zbox" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;border-color:${esc(c)};background:${esc(c)}22;color:${esc(c)}">${esc(z.label)}</div>`;
+      }).join("");
+      return `<div class="preview-box" aria-label="16:9 wireframe preview for ${esc(layout.name)}"><div class="preview-safe"></div>${zonesHtml}</div>`;
+    }
+
+    function renderGrid() {
+      const enabledCount = layouts.filter((l) => l.enabled).length;
+      countSummary.textContent = `${enabledCount} of ${layouts.length} layouts enabled for production`;
+
+      const visible = layouts.filter((l) => {
+        if (activeFilter === "enabled") return l.enabled;
+        if (activeFilter.startsWith("cat:")) return l.category === activeFilter.slice(4);
+        return true;
+      });
+
+      if (!visible.length) {
+        layoutGrid.innerHTML = `<p class="card">No layouts match the current filter.</p>`;
+        return;
+      }
+
+      layoutGrid.innerHTML = visible.map((l) => `
+        <article class="lcard ${l.enabled ? "enabled" : "disabled"}" data-layout-card="${esc(l.id)}">
+          <div class="lcard-head">
+            <div>
+              <h3 class="lcard-title">${esc(l.name)}</h3>
+              <div class="meta-row" style="margin-top:4px">
+                <code>${esc(l.id)}</code>
+                <span class="badge">${esc(l.category)}</span>
+                ${(l.aspectSupport || []).map((a) => `<span class="badge ok">${esc(a)}</span>`).join("")}
+              </div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" data-toggle-id="${esc(l.id)}" ${l.enabled ? "checked" : ""} />
+              <span>${l.enabled ? "Enabled" : "Off"}</span>
+            </label>
+          </div>
+          ${renderPreview(l)}
+          <p style="margin:0;font-size:14px;color:var(--mute)">${esc(l.description)}</p>
+          <div class="lcard-foot">
+            <span style="font-size:12px;color:var(--mute)">Best for: ${(l.recommendedFor || []).map(esc).join(", ")}</span>
+            <button type="button" class="btn" data-inspect-id="${esc(l.id)}">Inspect</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderAll() {
+      renderFilters();
+      renderGrid();
+    }
+
+    async function persistSelection(note) {
+      const enabledIds = layouts.filter((l) => l.enabled).map((l) => l.id);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(enabledIds));
+      if (apiBase === null) {
+        saveMsg.textContent = `${note || "Saved"} to browser storage (start API server to write presets/layouts.json)`;
+        return;
+      }
+      try {
+        saveMsg.textContent = "Saving to presets/layouts.json…";
+        const r = await fetch(`${apiBase}/api/layouts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabledIds })
+        });
+        const res = await r.json();
+        if (!r.ok) throw new Error(res.error || "Save failed");
+        saveMsg.textContent = `Saved ${res.enabledCount} enabled layout(s) to presets/layouts.json`;
+      } catch (err) {
+        saveMsg.textContent = `API save error: ${err.message}`;
+      }
+    }
+
+    filterPills.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-filter]");
+      if (!btn) return;
+      activeFilter = btn.dataset.filter;
+      renderAll();
+    });
+
+    layoutGrid.addEventListener("change", (e) => {
+      const cb = e.target.closest("[data-toggle-id]");
+      if (!cb) return;
+      const target = layouts.find((l) => l.id === cb.dataset.toggleId);
+      if (!target) return;
+      target.enabled = cb.checked;
+      renderAll();
+      persistSelection("Updated");
+    });
+
+    layoutGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-inspect-id]");
+      if (!btn) return;
+      const l = layouts.find((x) => x.id === btn.dataset.inspectId);
+      if (!l) return;
+      document.getElementById("modalTitle").textContent = `${l.name} (${l.id})`;
+      document.getElementById("modalDesc").textContent = l.description;
+      document.getElementById("modalSnippet").textContent = JSON.stringify({
+        id: "s02-example",
+        label: "CHAPTER 1",
+        title: "Example scene",
+        layout: l.id,
+        bg: "desk",
+        overlay: ["Headline here", "Supporting point"]
+      }, null, 2);
+      document.getElementById("modalZones").textContent = JSON.stringify(l.zones, null, 2);
+      modal.showModal();
+    });
+
+    document.getElementById("closeModalBtn").addEventListener("click", () => modal.close());
+    document.getElementById("selectAllBtn").addEventListener("click", () => {
+      layouts.forEach((l) => { l.enabled = true; });
+      renderAll();
+      persistSelection("Enabled all");
+    });
+    document.getElementById("selectNoneBtn").addEventListener("click", () => {
+      layouts.forEach((l) => { l.enabled = false; });
+      renderAll();
+      persistSelection("Disabled all");
+    });
+    document.getElementById("saveBtn").addEventListener("click", () => persistSelection("Saved"));
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const payload = {
+        _about: "Video production scene layouts (1920x1080, 60px safe-zone padding).",
+        canvas: docCanvas,
+        layouts
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2) + "\n"], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "layouts.json";
+      a.click();
+    });
+
+    detectApiAndLoad();
+  </script>
+</body>
+</html>

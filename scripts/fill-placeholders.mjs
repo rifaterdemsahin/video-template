@@ -25,7 +25,7 @@ const forJson = (s) => JSON.stringify(s).slice(1, -1);
 const ROOTS = [
   "script", "spec", "plan", "thumbnails", "prompts", "checklists", "presets", "video.yaml",
   "index.html", "nav.js", "master-spec.html", "script.html", "review.html", "maturity.html",
-  "kanban.html", "publish.html", "release-checklist.html", "recommendations.html", "agents.html"
+  "kanban.html", "publish.html", "release-checklist.html", "recommendations.html", "agents.html", "artifacts.html"
 ];
 const TEXT = /\.(md|json|ya?ml|html|mjs|js|sh|txt|css)$/;
 let changed = 0;
