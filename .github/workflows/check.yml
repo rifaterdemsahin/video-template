@@ -1,0 +1,66 @@
+name: Pre-Flight Check
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  validate-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install video dependencies
+        run: npm ci --prefix video
+
+      - name: Syntax check scripts
+        run: |
+          for f in scripts/*.mjs; do node --check "$f"; done
+          bash -n new-video.sh scripts/*.sh
+
+      - name: Hygiene check (no secrets or tracked media)
+        run: |
+          if git ls-files | grep -qiE '\.(mp4|mov|m4v|mkv|mp3|wav|aac|m4a|jpg|jpeg|png|webp)$|^\.env$'; then
+            echo "ERROR: tracked binary media or .env file found in git!"
+            exit 1
+          fi
+          if git grep -nE '(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})' -- ':!.github/workflows/check.yml'; then
+            echo "ERROR: potential secret token found in tracked files!"
+            exit 1
+          fi
+
+      - name: Test template scaffolding, build, and validate on temp copy
+        run: |
+          TMP=$(mktemp -d)
+          cp -r . "$TMP/repo"
+          cd "$TMP/repo"
+          cat > video.yaml <<'EOF'
+          title: "CI Test Video"
+          series: "Standalone"
+          publish_date: "2026-11-19"
+          slug: "{{SLUG}}"
+          EOF
+          ./new-video.sh ci-test
+          node scripts/retime.mjs
+          node scripts/build-video.mjs
+          node scripts/build-storyboard.mjs
+          node scripts/validate.mjs
+
+      - name: Run Hyperframes composition check
+        run: |
+          node scripts/build-video.mjs
+          cd video
+          # Run check and inspect Layout/Motion/Contrast/Craft (expected 404s for git-ignored media in template repo)
+          OUTPUT=$(npm run check 2>&1 || true)
+          echo "$OUTPUT"
+          echo "$OUTPUT" | grep -q "0 issues across" || { echo "Layout check failed"; exit 1; }
+          echo "$OUTPUT" | grep -q "Motion" && echo "$OUTPUT" | grep -A1 "Motion" | grep -q "0 errors" || { echo "Motion check failed"; exit 1; }
+          echo "$OUTPUT" | grep -q "Craft" && echo "$OUTPUT" | grep -A1 "Craft" | grep -q "0 errors" || { echo "Craft check failed"; exit 1; }

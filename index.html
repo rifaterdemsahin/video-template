@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>video-template · Navigation &amp; Feedback Hub</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #131c31;
+      --border: #24324d;
+      --ink: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #4cc3d9;
+      --warn: #ffd166;
+      --ok: #34d399;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      padding: 36px 20px 80px;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-bottom: 22px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { font-size: 28px; color: #fff; }
+    .sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+    .pill-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      transition: border-color .15s;
+    }
+    .pill:hover { border-color: var(--accent); }
+    h2 { font-size: 18px; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .15s, border-color .15s;
+    }
+    .card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .card-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: rgba(76, 195, 217, 0.14);
+      color: var(--accent);
+    }
+    .card-tag.warn { background: rgba(255, 209, 102, 0.14); color: var(--warn); }
+    .card h3 { font-size: 16px; color: #fff; }
+    .card p { font-size: 13px; color: var(--muted); }
+    .card .go { font-size: 13px; font-weight: 700; color: var(--accent); }
+
+    .feedback-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    label { font-size: 13px; font-weight: 600; color: #cbd5e1; }
+    input, select, textarea {
+      width: 100%;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    textarea { min-height: 96px; resize: vertical; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--accent); color: #04222a; }
+    .btn-secondary { background: #1e293b; color: #e2e8f0; border: 1px solid var(--border); }
+    .btn-danger { background: #451a1a; color: #fecaca; padding: 6px 12px; font-size: 12px; }
+    .saved-list { margin-top: 22px; border-top: 1px solid var(--border); padding-top: 18px; }
+    .fb-item {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .fb-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .status { font-size: 13px; color: var(--ok); margin-left: 6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>🎬 video-template · Navigation &amp; Feedback Hub</h1>
+        <p class="sub">Central entry point for all interactive tools, thumbnail previews, docs, and review feedback.</p>
+      </div>
+      <div class="pill-links">
+        <a class="pill" href="https://github.com/rifaterdemsahin/video-template" target="_blank" rel="noopener">📦 GitHub Repo</a>
+        <a class="pill" href="https://github.com/rifaterdemsahin/video-template/actions" target="_blank" rel="noopener">🤖 CI / Actions</a>
+        <a class="pill" href="https://github.com/rifaterdemsahin/video-template/issues" target="_blank" rel="noopener">💬 Issues</a>
+      </div>
+    </header>
+
+    <h2>🧭 Interactive Pages &amp; Tools</h2>
+    <div class="grid">
+      <a class="card" href="./panel/index.html">
+        <div>
+          <span class="card-tag">Setup</span>
+          <h3>🚀 New Video Bulk Setup Panel</h3>
+          <p>Answer all project, brief, style, background, and scene questions in bulk to initialize a video.</p>
+        </div>
+        <span class="go">Open Setup Panel →</span>
+      </a>
+
+      <a class="card" href="./thumbnails/thumb-a.html">
+        <div>
+          <span class="card-tag">Thumbnail A</span>
+          <h3>🖼️ Variant A: Classic Bold Hook</h3>
+          <p>1280×720 HTML thumbnail with dark gradient overlay, series badge, and skewed payoff banner.</p>
+        </div>
+        <span class="go">Preview Variant A →</span>
+      </a>
+
+      <a class="card" href="./thumbnails/thumb-b.html">
+        <div>
+          <span class="card-tag">Thumbnail B</span>
+          <h3>🖼️ Variant B: Split-Screen</h3>
+          <p>High-contrast split-screen layout for A/B testing bold question hooks against background plates.</p>
+        </div>
+        <span class="go">Preview Variant B →</span>
+      </a>
+
+      <a class="card" href="./thumbnails/thumb-c.html">
+        <div>
+          <span class="card-tag">Thumbnail C</span>
+          <h3>🖼️ Variant C: Before / After</h3>
+          <p>Comparison card layout highlighting transformation or contrast in 6 words or fewer.</p>
+        </div>
+        <span class="go">Preview Variant C →</span>
+      </a>
+
+      <a class="card" href="./plan/storyboard.html">
+        <div>
+          <span class="card-tag warn">Local Generated</span>
+          <h3>🎞️ Visual Storyboard Reviewer</h3>
+          <p>Scene-by-scene preview with voiceover audio, WPM, and overlays. Generated via <code>node scripts/build-storyboard.mjs</code>.</p>
+        </div>
+        <span class="go">Open Storyboard →</span>
+      </a>
+    </div>
+
+    <h2>📚 Specs, Docs &amp; Checklists</h2>
+    <div class="grid">
+      <a class="card" href="https://github.com/rifaterdemsahin/video-template/blob/main/README.md" target="_blank" rel="noopener">
+        <div>
+          <span class="card-tag">Guide</span>
+          <h3>📖 README.md</h3>
+          <p>Quick-start instructions for cloning, initializing, generating assets, and rendering.</p>
+        </div>
+        <span class="go">View on GitHub →</span>
+      </a>
+
+      <a class="card" href="https://github.com/rifaterdemsahin/video-template/blob/main/AGENTS.md" target="_blank" rel="noopener">
+        <div>
+          <span class="card-tag">AI Agents</span>
+          <h3>🤖 AGENTS.md</h3>
+          <p>Operating rules, Hyperframes render contract, and workflow for AI coding agents.</p>
+        </div>
+        <span class="go">View on GitHub →</span>
+      </a>
+
+      <a class="card" href="https://github.com/rifaterdemsahin/video-template/blob/main/docs/RECOMMENDATIONS.md" target="_blank" rel="noopener">
+        <div>
+          <span class="card-tag">Audit</span>
+          <h3>💡 Recommendations</h3>
+          <p>Implemented improvements and remaining ideas from the repository audit.</p>
+        </div>
+        <span class="go">View on GitHub →</span>
+      </a>
+
+      <a class="card" href="https://github.com/rifaterdemsahin/video-template/blob/main/docs/MATURITY.md" target="_blank" rel="noopener">
+        <div>
+          <span class="card-tag">Scorecard</span>
+          <h3>📊 Maturity Scorecard</h3>
+          <p>10-area production maturity rubric and per-video self-assessment checklist.</p>
+        </div>
+        <span class="go">View on GitHub →</span>
+      </a>
+    </div>
+
+    <section class="feedback-box">
+      <h2>💬 Give Feedback</h2>
+      <p class="sub" style="margin-bottom:16px">Log feedback directly as a GitHub Issue or save notes locally to export as Markdown.</p>
+      <form id="fbForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="fbTarget">Page / Area</label>
+            <select id="fbTarget">
+              <option value="General / Navigation">General / Navigation</option>
+              <option value="Bulk Setup Panel (panel/index.html)">Bulk Setup Panel (panel/index.html)</option>
+              <option value="Thumbnails (thumb-a/b/c)">Thumbnails (thumb-a/b/c)</option>
+              <option value="Storyboard (plan/storyboard.html)">Storyboard (plan/storyboard.html)</option>
+              <option value="Script &amp; Scenes (script/scenes.json)">Script &amp; Scenes (script/scenes.json)</option>
+              <option value="Build &amp; CI Scripts">Build &amp; CI Scripts</option>
+              <option value="Docs &amp; AGENTS.md">Docs &amp; AGENTS.md</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fbType">Feedback Type</label>
+            <select id="fbType">
+              <option value="💡 Idea / Enhancement">💡 Idea / Enhancement</option>
+              <option value="🐛 Bug / Broken Link">🐛 Bug / Broken Link</option>
+              <option value="✍️ Copy / Script Edit">✍️ Copy / Script Edit</option>
+              <option value="🎨 Visual / Layout">🎨 Visual / Layout</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fbAuthor">Your Name (optional)</label>
+            <input id="fbAuthor" placeholder="e.g. Rifat" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="fbText">Feedback Details *</label>
+          <textarea id="fbText" required placeholder="Describe what looks good, what needs changing, or any new feature request..."></textarea>
+        </div>
+        <div class="btn-row">
+          <button type="submit" class="btn btn-primary">🚀 Open GitHub Issue</button>
+          <button type="button" id="saveLocalBtn" class="btn btn-secondary">💾 Save Note Locally</button>
+          <button type="button" id="copyMdBtn" class="btn btn-secondary">📋 Copy All Notes (Markdown)</button>
+          <span id="fbStatus" class="status"></span>
+        </div>
+      </form>
+
+      <div id="savedList" class="saved-list" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <h3 style="font-size:15px;color:#fff">Saved Local Notes</h3>
+          <button type="button" id="clearBtn" class="btn btn-danger">Clear All</button>
+        </div>
+        <div id="fbItems"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const KEY = "video_template_feedback_v1";
+    const loadNotes = () => { try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; } };
+    const saveNotes = (arr) => localStorage.setItem(KEY, JSON.stringify(arr));
+
+    const renderNotes = () => {
+      const notes = loadNotes();
+      const wrap = document.getElementById("savedList");
+      const list = document.getElementById("fbItems");
+      if (!notes.length) { wrap.style.display = "none"; return; }
+      wrap.style.display = "block";
+      list.innerHTML = notes.map((n, i) => `
+        <div class="fb-item">
+          <div class="fb-meta">
+            <span><strong>${n.type}</strong> · ${n.target}${n.author ? ` · by ${n.author}` : ""}</span>
+            <span>${n.date}</span>
+          </div>
+          <div>${n.text.replace(/</g, "&lt;")}</div>
+        </div>
+      `).join("");
+    };
+    renderNotes();
+
+    const getEntry = () => ({
+      target: document.getElementById("fbTarget").value,
+      type: document.getElementById("fbType").value,
+      author: document.getElementById("fbAuthor").value.trim(),
+      text: document.getElementById("fbText").value.trim(),
+      date: new Date().toISOString().slice(0, 16).replace("T", " ")
+    });
+
+    const flash = (msg) => {
+      const el = document.getElementById("fbStatus");
+      el.textContent = msg;
+      setTimeout(() => { el.textContent = ""; }, 3000);
+    };
+
+    document.getElementById("saveLocalBtn").addEventListener("click", () => {
+      const entry = getEntry();
+      if (!entry.text) return alert("Please enter feedback details first.");
+      const notes = loadNotes();
+      notes.unshift(entry);
+      saveNotes(notes);
+      document.getElementById("fbText").value = "";
+      renderNotes();
+      flash("Saved locally!");
+    });
+
+    document.getElementById("copyMdBtn").addEventListener("click", async () => {
+      const notes = loadNotes();
+      if (!notes.length) return alert("No saved local notes to copy.");
+      const md = notes.map(n => `- **${n.type}** (${n.target})${n.author ? ` — _${n.author}_` : ""}: ${n.text}`).join("\n");
+      await navigator.clipboard.writeText(md);
+      flash("Copied Markdown to clipboard!");
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      localStorage.removeItem(KEY);
+      renderNotes();
+    });
+
+    document.getElementById("fbForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const entry = getEntry();
+      const title = encodeURIComponent(`[Feedback] ${entry.type}: ${entry.target}`);
+      const body = encodeURIComponent(
+        `**Area:** ${entry.target}\n**Type:** ${entry.type}\n**Reviewer:** ${entry.author || "Anonymous"}\n\n**Feedback:**\n${entry.text}\n\n---\n_Submitted via [video-template hub](https://rifaterdemsahin.github.io/video-template/)_`
+      );
+      window.open(`https://github.com/rifaterdemsahin/video-template/issues/new?title=${title}&body=${body}`, "_blank", "noopener");
+    });
+  </script>
+</body>
+</html>
