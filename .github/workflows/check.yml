@@ -23,7 +23,8 @@ jobs:
 
       - name: Syntax check scripts
         run: |
-          for f in scripts/*.mjs; do node --check "$f"; done
+          node --check server.mjs
+          for f in scripts/*.mjs scripts/lib/*.mjs tests/*.mjs; do node --check "$f"; done
           bash -n new-video.sh scripts/*.sh
 
       - name: Run template tests & quality evals

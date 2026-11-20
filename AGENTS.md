@@ -179,3 +179,22 @@ When modifying `scripts/build-video.mjs` or writing custom sub-compositions, you
 - **Script Writer Agent**: Focuses on `plan/outline.md` and `script/scenes.json`. Enforces concise, natural phrasing, 130 WPM cadence, single call-to-action in final scene.
 - **Visual & Style Agent**: Focuses on `prompts/backgrounds.json`, CSS layouts in `build-video.mjs`, and thumbnail designs in `thumbnails/*.html`.
 - **QA & Verification Agent**: Runs `node scripts/validate.mjs --strict`, `cd video && npm run check`, captures snapshots, and verifies audio sync and safe areas.
+
+---
+
+## 8. Keynote Style, Music Bed & Review Workflow (v1.2.0+)
+
+### Keynote Style (`"style": "keynote"` in `script/scenes.json`)
+- Each scene defines a `keynote` array of beats: `{ "at": "<words in VO>", "text": "...", "key": "<accent word>" }`, plus optional `"image": "<bg name>"` or `"visual": "<knVisual name>"` (22 built-in animated SVGs, no text/logos inside drawings).
+- Rules: max 6 words per beat, no lists, one accent word, 140–200 px type on black.
+- Word-accurate timing: if `video/assets/vo/<id>.transcript.json` exists (Whisper word timestamps), `scripts/build-video.mjs` aligns beats via LCS; otherwise it estimates from word position.
+- Run `node scripts/audit-keynote.mjs --label=vN [--mp4=draft/vN/video.mp4]` to verify 0 flagged moments.
+
+### Music Bed (`scripts/gen-music.sh` + `scripts/mix-music.mjs`)
+- `scripts/gen-music.sh` generates an instrumental ACE-Step bed (`video/assets/music/bed-raw.*`, Apache-2.0) via `fal.ai`.
+- `node scripts/mix-music.mjs` ducks the bed under voiceover clips and swells in gaps/CTA (`video/assets/music/bed-mix.mp3`), which `scripts/build-video.mjs` auto-mounts.
+
+### Timed Draft Renders & Review Server (`scripts/render-draft.mjs`, `server.mjs`)
+- `node scripts/render-draft.mjs [--version=N]` runs build → `npm run check` → 1080p render → 720p web copy → scene frames → records timings in `spec/performance.json` → rebuilds `review.html`, `compare-drafts.html`, `first-draft.html`, `renders.html`, and `performance.html`.
+- `node server.mjs` serves the workspace locally (default port `30080` or `PORT`) with HTTP 206 range seeking for MP4 scrubbing, automatic draft video fallback, dotfile blocking (`.env`, `.git`, `.hyperframes`), and optional server-proxy Azure Blob sync for review drawings and verification state.
+

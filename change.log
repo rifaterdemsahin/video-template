@@ -1,5 +1,24 @@
 # change.log
 
+## [1.2.0] - 2026-11-20
+### Added
+- **Keynote Style Engine** (`scripts/build-video.mjs`, `scripts/audit-keynote.mjs`):
+  - Supports `"style": "keynote"` in `script/scenes.json` (one idea per screen, max 6 words, accent word, full-bleed images, 22 drawn SVG visuals via `knVisual()`, word-timestamp LCS alignment via Whisper `*.transcript.json`, reading floor warnings, and generated speaker notes in `video/notes.md`).
+  - Added `scripts/audit-keynote.mjs` headless-Chrome CDP auditor for Keynote rule compliance.
+- **Music Bed Pipeline** (`scripts/gen-music.sh`, `scripts/mix-music.mjs`):
+  - Generates an instrumental ACE-Step music bed via `fal.ai` and ducks it automatically under voiceover with swells in gaps and CTA.
+  - `scripts/build-video.mjs` auto-mounts `video/assets/music/bed-mix.mp3` when present.
+- **Interactive Review Hub, Compare Drafts, Renders & Performance Pages** (`scripts/build-review-page.mjs`, `scripts/build-compare-drafts-page.mjs`, `scripts/build-renders-page.mjs`, `scripts/build-first-draft-page.mjs`, `scripts/build-performance-page.mjs`, `scripts/render-draft.mjs`):
+  - Upgraded `review.html` from a stub to the full frame-accurate video review workbench with drawing canvas, timestamped notes, verification carousel, Markdown/video export, and optional Azure Blob server-proxy sync.
+  - Added `compare-drafts.html` (side-by-side synced dual player, A/B audio switcher, scene frame diffs, optional `draft/scores.json` ranking).
+  - Added `renders.html`, `first-draft.html`, and `performance.html` with timed local pipeline metrics (`scripts/render-draft.mjs` -> `spec/performance.json`).
+  - Added `scripts/lib/project.mjs` so all generators derive title, slug, repo, and version dynamically with zero hard-coded project values.
+- **Secure Local Review Server** (`server.mjs`, `tests/server.test.mjs`, `tests/review-state.test.mjs`):
+  - HTTP 206 Partial Content range streaming for MP4 scrubbing, automatic draft video fallback, CORS, server-proxy Azure drawing/verification endpoints (SAS never leaks to client), and dotfile/dot-folder blocking (`.env`, `.git`, `.hyperframes`).
+
+### Fixed
+- Removed duplicate lowercase `agents.md` that collided with `AGENTS.md` on case-insensitive filesystems (macOS).
+
 ## [1.1.0] - 2026-11-19
 ### Added
 - **Bulk Setup Panel & Prompt Generator** (`panel/index.html`, `scripts/init-panel.mjs`):

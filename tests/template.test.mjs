@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync, cpSync, rmSync, mkdtempSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, cpSync, rmSync, mkdtempSync } from "node:fs";
 import { execFileSync, execSync, spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, resolve, join } from "node:path";
@@ -40,7 +40,8 @@ test("all core JSON configs parse and contain required schema fields", () => {
 
 test("all website pages, thumbnails, and shared assets exist and wire nav.js", () => {
   const rootPages = [
-    "index.html", "master-spec.html", "script.html", "layouts.html", "review.html", "maturity.html",
+    "index.html", "master-spec.html", "script.html", "layouts.html", "review.html", "compare-drafts.html",
+    "first-draft.html", "renders.html", "performance.html", "maturity.html",
     "kanban.html", "publish.html", "release-checklist.html", "recommendations.html", "agents.html", "artifacts.html"
   ];
   for (const p of rootPages) {
@@ -65,7 +66,7 @@ test("all website pages, thumbnails, and shared assets exist and wire nav.js", (
 });
 
 test("all .mjs and .sh scripts pass syntax checks", () => {
-  const mjs = execSync("ls scripts/*.mjs tests/*.mjs", { cwd: root, encoding: "utf8" }).trim().split(/\s+/);
+  const mjs = execSync("ls server.mjs scripts/*.mjs scripts/lib/*.mjs tests/*.mjs", { cwd: root, encoding: "utf8" }).trim().split(/\s+/);
   for (const f of mjs) execFileSync("node", ["--check", f], { cwd: root });
   execSync("bash -n new-video.sh scripts/*.sh", { cwd: root });
 });
@@ -78,7 +79,14 @@ test("end-to-end scaffolding, retime, build-video, build-storyboard, and validat
       filter: (src) => !src.includes("/node_modules") && !src.includes("/.git") && !src.includes("/.hyperframes")
     });
 
-    execSync(`sed -i 's/{{VIDEO_TITLE}}/Eval Test Video/; s/{{SERIES}}/Standalone/; s/{{PUBLISH_DATE}}/2026-11-19/' video.yaml`, { cwd: tmp });
+    const yamlPath = join(tmp, "video.yaml");
+    writeFileSync(
+      yamlPath,
+      readFileSync(yamlPath, "utf8")
+        .replace(/\{\{VIDEO_TITLE\}\}/g, "Eval Test Video")
+        .replace(/\{\{SERIES\}\}/g, "Standalone")
+        .replace(/\{\{PUBLISH_DATE\}\}/g, "2026-11-19")
+    );
     execFileSync("./new-video.sh", ["eval-test"], { cwd: tmp });
 
     // Second run must be refused
@@ -109,6 +117,21 @@ test("end-to-end scaffolding, retime, build-video, build-storyboard, and validat
 
     const filledNav = readFileSync(join(tmp, "nav.js"), "utf8");
     assert.ok(filledNav.includes("Eval Test Video") && !filledNav.includes("{{VIDEO_TITLE}}"), "nav.js placeholders must be replaced");
+
+    // Verify Keynote style build & video/notes.md generation
+    const scPath = join(tmp, "script/scenes.json");
+    const scDoc = JSON.parse(readFileSync(scPath, "utf8"));
+    scDoc.style = "keynote";
+    scDoc.scenes[0].vo = "This is a clear opening hook for the video.";
+    scDoc.scenes[0].keynote = [
+      { text: "Clear opening hook", key: "hook" },
+      { at: "for the video", text: "One idea per screen", key: "One", visual: "bulb" }
+    ];
+    writeFileSync(scPath, JSON.stringify(scDoc, null, 2));
+    execFileSync("node", ["scripts/build-video.mjs"], { cwd: tmp });
+    const knScene = readFileSync(join(tmp, "video/compositions/s01-hook.html"), "utf8");
+    assert.ok(knScene.includes("keynote style") && knScene.includes('class="kvis"'), "keynote build should render keynote beats and SVG visual");
+    assert.ok(existsSync(join(tmp, "video/notes.md")), "keynote build should write video/notes.md");
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }

@@ -1,11 +1,12 @@
 {
   "name": "video-template",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/template.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "eval": "node tests/evals.mjs",
+    "check": "npm test && npm run eval",
     "verify:e2e": "bash scripts/verify-e2e.sh"
   }
 }

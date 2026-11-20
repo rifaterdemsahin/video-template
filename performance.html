@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Performance · Untitled video</title>
+<link rel="stylesheet" href="site.css">
+<style>
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:14px 0}.kpis div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.kpis b{display:block;font-size:26px;color:var(--accent)}.kpis small{color:var(--mute)}
+.meas{color:var(--mute);font-size:14px}.bars{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.row{display:grid;grid-template-columns:minmax(120px,300px) 1fr 90px;gap:10px;align-items:center;margin:7px 0;font-size:14px}.row .tr{background:var(--bg);border-radius:6px;height:14px;overflow:hidden}.row i{display:block;height:100%;background:var(--accent);border-radius:6px}.row.top i{background:var(--warn)}.row .v{text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:600px){.row{grid-template-columns:1fr 70px}.row .tr{grid-column:1/-1;order:3}}
+</style></head><body>
+<script src="nav.js"></script>
+<main>
+  <div class="crumbs">🔍 2 Review · Performance</div>
+  <h1>⏱️ Performance</h1>
+  <p class="lead">How long the pipeline takes: turning <code>script/scenes.json</code> into a checked, rendered film and a published site.</p>
+  <p class="note">Every number is measured by <code>scripts/render-draft.mjs</code> on the real project, not estimated. Deploy times come from GitHub. Rebuild with <code>node scripts/render-draft.mjs</code>.</p>
+  <p class="note">No run has been measured yet. Run <code>node scripts/render-draft.mjs</code> to build, check, render, and record real pipeline timings.</p>
+</main>
+<script>
+(function(){var el=document.getElementById("ago");if(!el)return;var t=new Date(el.dataset.at);
+function p(){var s=Math.max(0,Math.round((Date.now()-t)/1000)),m=Math.floor(s/60),h=Math.floor(m/60);
+el.textContent=s<60?"just now":m<60?m+" min ago":h<48?h+" h ago":Math.floor(h/24)+" days ago";}
+p();setInterval(p,30000);})();
+</script>
+</body></html>
